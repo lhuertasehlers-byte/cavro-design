@@ -273,8 +273,31 @@
   .sortieren select { font: inherit; color: var(--tiefbeere); background: transparent; border: 0; padding: 4px 18px 4px 0; cursor: pointer; appearance: none; -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 3l4 4 4-4' fill='none' stroke='%233D0A24' stroke-width='1.4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right center; background-size: 10px; }
   .shop-raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px 24px; }
-  .shop-karte { text-decoration: none; display: block; }
-  .shop-karte .foto { aspect-ratio: 3/4; overflow: hidden; margin-bottom: 14px; background: #F1E6E8; }
+  .shop-karte { display: block; }
+  .shop-karte .zum-produkt { text-decoration: none; display: block; }
+  .shop-karte .bild { position: relative; margin-bottom: 14px; }
+  /* Schnell in den Korb: kleine Tasche mit Plus, erscheint beim Drüberfahren (Handy: beim Berühren),
+     klappt über der Tasche auf und zeigt „Hinzufügen“ */
+  .schnell-rein { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; align-items: center; height: 40px; padding: 0 10px; gap: 0;
+    background: rgba(253,250,249,.94); color: var(--tiefbeere); border: 0; font-size: 13px; font-weight: 500; white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(61,10,36,.12);
+    opacity: 0; transform: translateY(-4px) scale(.85); transform-origin: top right; pointer-events: none;
+    transition: opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.3), background .2s, color .2s, gap .25s; }
+  .schnell-rein svg { width: 20px; height: 20px; flex: none; }
+  .schnell-rein .wort { max-width: 0; overflow: hidden; transition: max-width .3s ease; }
+  @media (hover: hover) {
+    .shop-karte:hover .schnell-rein { opacity: 1; transform: none; pointer-events: auto; }
+    .schnell-rein:hover { background: var(--beere); color: var(--weiss); gap: 8px; }
+    .schnell-rein:hover .wort { max-width: 140px; }
+  }
+  .shop-karte.beruehrt .schnell-rein, .shop-karte:focus-within .schnell-rein { opacity: 1; transform: none; pointer-events: auto; }
+  .schnell-rein:focus-visible { gap: 8px; }
+  .schnell-rein:focus-visible .wort { max-width: 140px; }
+  /* nach dem Klick kurz „Hinzugefügt“ */
+  .schnell-rein.ok { opacity: 1; transform: none; background: var(--beere); color: var(--weiss); gap: 8px; }
+  .schnell-rein.ok .wort { max-width: 140px; }
+  @media (prefers-reduced-motion: reduce) { .schnell-rein, .schnell-rein .wort { transition: none; } }
+  .shop-karte .foto { aspect-ratio: 3/4; overflow: hidden; background: #F1E6E8; }
   .shop-karte .foto img { transition: transform .5s ease; }
   .shop-karte:hover .foto img { transform: scale(1.03); }
   /* Namen in normaler Schrift (nicht fett), Farbe daneben etwas heller */
@@ -323,7 +346,7 @@
   .auch { padding-bottom: 110px; }
   .auch h2 { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(26px, 3vw, 34px); line-height: 1; margin-bottom: 26px; }
   @media (max-width: 1000px) { .shop-raster { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 700px) { .shop-raster { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } .shop-seite .wrap { padding-top: 36px; } .shop-titel { margin-bottom: 18px; } .shop-rechts { width: 100%; justify-content: space-between; } .shop-karte h3 { font-size: 14px; } .shop-karte .preis { font-size: 14px; } }
+  @media (max-width: 700px) { .shop-raster { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } .shop-seite .wrap { padding-top: 36px; } .shop-titel { margin-bottom: 18px; } .shop-rechts { width: 100%; justify-content: space-between; } .shop-karte h3 { font-size: 14px; } .shop-karte .preis { font-size: 14px; } .schnell-rein { top: 8px; right: 8px; height: 34px; padding: 0 8px; font-size: 12px; } .schnell-rein svg { width: 18px; height: 18px; } }
   @media (max-width: 860px) {
     .produkt { grid-template-columns: 1fr; gap: 28px; }
     .produkt .text { position: static; }
@@ -502,7 +525,7 @@
       farbe_waehlen: 'Farbe wählen', farbe: 'Farbe', material: 'Gold oder Silber', zeile: 'Von Hand gemacht. Jedes Stück ist ein bisschen anders.',
       art_ring: 'Ring', art_ohrring: 'Ohrringe', zzgl_versand: 'zzgl. Versand', weniger: 'Eins weniger', mehr: 'Eins mehr', anzahl: 'Anzahl',
       beschr_ring: 'Größenverstellbar, passt sich deinem Finger an. Von Hand gebogen.', fakt_versand: 'Versand mit DHL:', fakt_widerruf: '14 Tage Widerrufsrecht',
-      zurueck: 'Zurück', alle_ohrringe: 'Alle Ohrringe', alle_ringe: 'Alle Ringe', auch: 'Könnte dir auch gefallen',
+      hinzufuegen: 'Hinzufügen', hinzugefuegt: 'Hinzugefügt', zurueck: 'Zurück', alle_ohrringe: 'Alle Ohrringe', alle_ringe: 'Alle Ringe', auch: 'Könnte dir auch gefallen',
       korb_h: 'Dein Korb', summe: 'Summe', versand: 'Versand mit DHL', kasse: 'Zur Kasse', entfernen: 'Entfernen',
       leer: 'Noch leer. Vera wartet schon.', hinweis: 'Entwurf: Die Kasse mit Stripe bauen wir im nächsten Schritt.',
       f_kontakt: 'Kontakt', f_impressum: 'Impressum', f_datenschutz: 'Datenschutz', f_agb: 'AGB', f_widerruf: 'Widerruf', f_versand: 'Versand und Zahlung'
@@ -519,7 +542,7 @@
       farbe_waehlen: 'Choose a colour', farbe: 'Colour', material: 'Gold or silver', zeile: 'Made by hand. Every piece is a little different.',
       art_ring: 'Ring', art_ohrring: 'Earrings', zzgl_versand: 'plus shipping', weniger: 'One less', mehr: 'One more', anzahl: 'Quantity',
       beschr_ring: 'Adjustable, fits your finger. Bent by hand.', fakt_versand: 'Shipped with DHL:', fakt_widerruf: '14-day right of withdrawal',
-      zurueck: 'Back', alle_ohrringe: 'All earrings', alle_ringe: 'All rings', auch: 'You might also like',
+      hinzufuegen: 'Add', hinzugefuegt: 'Added', zurueck: 'Back', alle_ohrringe: 'All earrings', alle_ringe: 'All rings', auch: 'You might also like',
       korb_h: 'Your bag', summe: 'Total', versand: 'Shipping with DHL', kasse: 'Checkout', entfernen: 'Remove',
       leer: 'Still empty. Vera is waiting.', hinweis: 'Draft: checkout with Stripe comes next.',
       f_kontakt: 'Contact', f_impressum: 'Legal notice', f_datenschutz: 'Privacy', f_agb: 'Terms', f_widerruf: 'Returns', f_versand: 'Shipping and payment'
@@ -536,7 +559,7 @@
       farbe_waehlen: 'Choisir une couleur', farbe: 'Couleur', material: 'Or ou argent', zeile: 'Fait main. Chaque pièce est un peu différente.',
       art_ring: 'Bague', art_ohrring: 'Boucles d’oreilles', zzgl_versand: 'hors livraison', weniger: 'Un de moins', mehr: 'Un de plus', anzahl: 'Quantité',
       beschr_ring: 'Réglable, elle s’adapte à ton doigt. Façonnée à la main.', fakt_versand: 'Livraison DHL :', fakt_widerruf: 'Droit de rétractation de 14 jours',
-      zurueck: 'Retour', alle_ohrringe: 'Toutes les boucles', alle_ringe: 'Toutes les bagues', auch: 'Tu aimeras peut-être aussi',
+      hinzufuegen: 'Ajouter', hinzugefuegt: 'Ajouté', zurueck: 'Retour', alle_ohrringe: 'Toutes les boucles', alle_ringe: 'Toutes les bagues', auch: 'Tu aimeras peut-être aussi',
       korb_h: 'Ton panier', summe: 'Total', versand: 'Livraison DHL', kasse: 'Commander', entfernen: 'Retirer',
       leer: 'Encore vide. Vera t’attend.', hinweis: 'Brouillon : le paiement avec Stripe arrive bientôt.',
       f_kontakt: 'Contact', f_impressum: 'Mentions légales', f_datenschutz: 'Confidentialité', f_agb: 'CGV', f_widerruf: 'Rétractation', f_versand: 'Livraison et paiement'
@@ -613,11 +636,18 @@
   function shopKarte(p, i = 0) {
     const v = p.varianten ? p.varianten[i] : p;
     const farbname = p.varianten ? `<span>${farbName(v)}</span>` : '';
-    return `<a class="shop-karte${p.ausverkauft ? ' ausverkauft' : ''}" href="${link(p, i)}">
-      <div class="foto"><img src="${foto(v.bild, 700)}" alt="${titel(p, v)}" loading="lazy"${p.pos ? ` style="object-position:${p.pos}"` : ''}>${schild(p)}</div>
-      <h3>${p.name}${farbname}</h3>
-      <p class="preis">${euro2(p.preis)}</p>
-    </a>`;
+    // Tasche mit Plus nur, wenn man das Stück kaufen kann
+    const schnell = p.ausverkauft ? '' : `<button class="schnell-rein" data-rein="${p.id}" data-index="${i}" aria-label="${titel(p, v)}: ${t('hinzufuegen')}">
+          <span class="wort">${t('hinzufuegen')}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4.5 8.5h15l-1.4 12.5H5.9z"/><path d="M8.5 8.5c0-4 1.6-5.5 3.5-5.5s3.5 1.5 3.5 5.5"/><path d="M12 12.2v5.2M9.4 14.8h5.2"/></svg>
+        </button>`;
+    return `<article class="shop-karte${p.ausverkauft ? ' ausverkauft' : ''}">
+      <div class="bild">
+        <a class="zum-produkt" href="${link(p, i)}" tabindex="-1" aria-hidden="true"><div class="foto"><img src="${foto(v.bild, 700)}" alt="" loading="lazy"${p.pos ? ` style="object-position:${p.pos}"` : ''}>${schild(p)}</div></a>
+        ${schnell}
+      </div>
+      <a class="zum-produkt" href="${link(p, i)}"><h3>${p.name}${farbname}</h3><p class="preis">${euro2(p.preis)}</p></a>
+    </article>`;
   }
   // jede Farbe als eigene Karte; sortiert wie gewählt, Ausverkauftes immer zuletzt
   let sortierung = 'empfohlen';
@@ -695,6 +725,12 @@
     });
   }
 
+  // Handy: beim Berühren (auch beim Drüberwischen) einer Karte erscheint ihre Tasche
+  document.addEventListener('touchstart', e => {
+    const k = e.target.closest('.shop-karte');
+    document.querySelectorAll('.shop-karte.beruehrt').forEach(x => { if (x !== k) x.classList.remove('beruehrt'); });
+    if (k) k.classList.add('beruehrt');
+  }, { passive: true });
   el('sortierung').addEventListener('change', e => { sortierung = e.target.value; shopZeigen(); });
 
   // ---------- Produktseite ----------
@@ -748,7 +784,14 @@
       // gleiches Stück in gleicher Farbe nur einmal im Korb, dafür mit Anzahl
       const da = korb.find(x => x.id === p.id && x.index === idx);
       if (da) da.menge += menge; else korb.push({ id: p.id, index: idx, menge });
-      korbZeigen(); oeffnen();
+      korbZeigen();
+      if (rein.classList.contains('schnell-rein')) {
+        // kurz „Hinzugefügt“ zeigen, der Korb oben hüpft und zählt hoch
+        const wort = rein.querySelector('.wort');
+        rein.classList.add('ok'); wort.textContent = t('hinzugefuegt');
+        clearTimeout(rein._zeit);
+        rein._zeit = setTimeout(() => { rein.classList.remove('ok'); wort.textContent = t('hinzufuegen'); }, 1600);
+      } else oeffnen();
       el('beutel').classList.remove('hupf'); void el('beutel').offsetWidth; el('beutel').classList.add('hupf');
     }
   });
