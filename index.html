@@ -332,18 +332,22 @@
   .produkt .preis { display: flex; align-items: baseline; gap: 12px; font-size: 20px; font-weight: 500; }
   .produkt .preis a { font-size: 13px; font-weight: 400; color: rgba(61,10,36,.6); }
   .produkt hr { border: 0; border-top: 1px solid rgba(61,10,36,.12); margin: 26px 0; }
+  /* Kaufbereich: weich abgerundet, ohne Orange, ruhig in Beere */
   .optionen { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
-  .optionen button { min-width: 100px; padding: 11px 20px; background: none; border: 1px solid rgba(61,10,36,.25); color: var(--tiefbeere); font-size: 15px; transition: background .2s, color .2s, border-color .2s; }
-  .optionen button:hover { border-color: var(--tiefbeere); }
-  .optionen button[aria-pressed="true"] { background: var(--beere); border-color: var(--beere); color: var(--weiss); font-weight: 500; }
+  .optionen button { min-width: 104px; padding: 11px 22px; background: none; border: 1px solid rgba(61,10,36,.2); border-radius: 14px; color: var(--tiefbeere); font-size: 15px;
+    transition: background .4s ease, border-color .4s ease, box-shadow .4s ease; }
+  .optionen button:hover { border-color: rgba(61,10,36,.45); }
+  .optionen button[aria-pressed="true"] { background: rgba(126,21,68,.06); border-color: var(--beere); box-shadow: inset 0 0 0 .5px var(--beere); font-weight: 500; }
   .produkt .kaufen { display: flex; align-items: stretch; gap: 10px; margin-bottom: 28px; }
-  .menge { display: flex; align-items: center; border: 1px solid rgba(61,10,36,.25); }
-  .menge button { width: 42px; align-self: stretch; background: none; border: 0; color: var(--tiefbeere); font-size: 19px; }
+  .menge { display: flex; align-items: center; border: 1px solid rgba(61,10,36,.2); border-radius: 14px; overflow: hidden; }
+  .menge button { width: 42px; align-self: stretch; background: none; border: 0; color: var(--tiefbeere); font-size: 19px; transition: background .3s ease; }
   @media (hover: hover) { .menge button:hover { background: rgba(61,10,36,.05); } }
   .menge output { min-width: 22px; text-align: center; font-weight: 500; }
-  .kauf-knopf { flex: 1; padding: 16px 24px; background: var(--orange); color: #fff; border: 0; font-weight: 700; font-size: 16px; letter-spacing: .01em; transition: background .2s; }
-  .kauf-knopf:hover { background: #CF3E14; }
-  .kauf-knopf[disabled] { background: none; border: 1px solid rgba(61,10,36,.25); color: rgba(61,10,36,.6); cursor: default; }
+  .kauf-knopf { flex: 1; padding: 16px 24px; background: var(--beere); color: var(--weiss); border: 0; border-radius: 14px; font-weight: 500; font-size: 16px; letter-spacing: .01em; transition: background .4s ease; }
+  .kauf-knopf:hover { background: var(--tiefbeere); }
+  .kauf-knopf[disabled] { background: none; border: 1px solid rgba(61,10,36,.2); color: rgba(61,10,36,.55); cursor: default; }
+  /* Fokusrahmen im Kaufbereich in Beere statt Orange */
+  .produkt :focus-visible { outline-color: var(--beere); }
   .beschreibung { font-size: 16px; line-height: 1.6; max-width: 40ch; margin-bottom: 22px; }
   .fakten { list-style: none; border-top: 1px solid rgba(61,10,36,.12); padding-top: 18px; display: grid; gap: 6px; font-size: 14px; color: rgba(61,10,36,.7); }
   .fakten a { color: inherit; text-underline-offset: 3px; }
