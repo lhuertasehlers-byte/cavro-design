@@ -1,0 +1,20 @@
+{
+  "name": "Eclipse",
+  "art": "ring",
+  "preis": 15,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 80,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Gold",
+      "foto": "/img/eclipse.jpg"
+    },
+    {
+      "farbe": "Silber",
+      "foto": "/img/eclipse-silber.jpg"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Ophelia",
+  "art": "ring",
+  "preis": 20,
+  "ausverkauft": false,
+  "startseite": true,
+  "position": 70,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Gold",
+      "foto": "/img/ophelia.jpg"
+    },
+    {
+      "farbe": "Silber",
+      "foto": "/img/ophelia-silber.jpg"
+    }
+  ]
+}

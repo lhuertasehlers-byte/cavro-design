@@ -1,0 +1,20 @@
+{
+  "name": "Olympia",
+  "art": "ring",
+  "preis": 20,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 90,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Gold",
+      "foto": "/img/olympia.jpg"
+    },
+    {
+      "farbe": "Silber",
+      "foto": "/img/olympia-silber.jpg"
+    }
+  ]
+}

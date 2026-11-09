@@ -1,0 +1,16 @@
+{
+  "name": "Valeska",
+  "art": "ring",
+  "preis": 20,
+  "ausverkauft": true,
+  "startseite": false,
+  "position": 120,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "",
+      "foto": "/img/valeska.jpg"
+    }
+  ]
+}

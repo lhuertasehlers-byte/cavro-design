@@ -1,0 +1,27 @@
+{
+  "name": "Vera",
+  "art": "ohrring",
+  "preis": 39,
+  "ausverkauft": false,
+  "startseite": true,
+  "position": 10,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Fuchsia",
+      "foto": "/img/vera-fuchsia.jpg",
+      "namensfarbe": "#F4C9D3"
+    },
+    {
+      "farbe": "Salbeigrün",
+      "foto": "/img/vera-salbei.jpg",
+      "namensfarbe": "#DCE6CF"
+    },
+    {
+      "farbe": "Senffarben",
+      "foto": "/img/vera-senf.jpg",
+      "namensfarbe": "#F2DDAE"
+    }
+  ]
+}

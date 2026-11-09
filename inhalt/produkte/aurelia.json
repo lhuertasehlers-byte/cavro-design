@@ -1,0 +1,17 @@
+{
+  "name": "Aurelia",
+  "art": "ohrring",
+  "preis": 19,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 50,
+  "beschreibung": "",
+  "bildausschnitt": "rechts",
+  "varianten": [
+    {
+      "farbe": "",
+      "foto": "/img/aurelia.jpg",
+      "namensfarbe": "#F3E3A6"
+    }
+  ]
+}

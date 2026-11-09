@@ -1,0 +1,17 @@
+{
+  "name": "Mafalda",
+  "art": "ohrring",
+  "preis": 49,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 30,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "",
+      "foto": "/img/mafalda.jpg",
+      "namensfarbe": "#D5E1EF"
+    }
+  ]
+}

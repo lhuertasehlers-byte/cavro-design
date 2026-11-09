@@ -1,0 +1,4 @@
+# Netlify: bei jeder Änderung (auch aus dem Verwaltungsbereich) wird daten.js neu gebaut
+[build]
+  command = "node bauen.js"
+  publish = "."

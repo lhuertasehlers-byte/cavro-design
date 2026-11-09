@@ -1,0 +1,20 @@
+{
+  "name": "Augusta",
+  "art": "ring",
+  "preis": 15,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 110,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Gold",
+      "foto": "/img/augusta.jpg"
+    },
+    {
+      "farbe": "Silber",
+      "foto": "/img/augusta-silber.jpg"
+    }
+  ]
+}

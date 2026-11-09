@@ -1,0 +1,22 @@
+{
+  "name": "Greta",
+  "art": "ohrring",
+  "preis": 39,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 20,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "Emerald",
+      "foto": "/img/greta-emerald.jpg",
+      "namensfarbe": "#CFE6DA"
+    },
+    {
+      "farbe": "Amethyst",
+      "foto": "/img/greta-amethyst.jpg",
+      "namensfarbe": "#E5D8EE"
+    }
+  ]
+}

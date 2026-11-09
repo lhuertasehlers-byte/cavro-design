@@ -1,0 +1,17 @@
+{
+  "name": "Clementine",
+  "art": "ohrring",
+  "preis": 49,
+  "ausverkauft": false,
+  "startseite": true,
+  "position": 40,
+  "beschreibung": "",
+  "bildausschnitt": "links",
+  "varianten": [
+    {
+      "farbe": "",
+      "foto": "/img/clementine.jpg",
+      "namensfarbe": "#DDEBD6"
+    }
+  ]
+}

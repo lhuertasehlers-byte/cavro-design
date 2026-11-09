@@ -1,0 +1,16 @@
+{
+  "name": "Astrea",
+  "art": "ring",
+  "preis": 18,
+  "ausverkauft": false,
+  "startseite": false,
+  "position": 100,
+  "beschreibung": "",
+  "bildausschnitt": "mitte",
+  "varianten": [
+    {
+      "farbe": "",
+      "foto": "/img/astrea.jpg"
+    }
+  ]
+}

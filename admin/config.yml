@@ -1,0 +1,104 @@
+# =====================================================================
+#  Verwaltungsbereich für CAVRØ (Decap CMS)
+#  Hier steht, welche Felder Carla unter /admin sieht.
+# =====================================================================
+locale: de
+
+backend:
+  name: github
+  repo: lhuertasehlers-byte/cavro-design
+  branch: main
+  commit_messages:
+    create: 'Neues Produkt: {{slug}}'
+    update: 'Geändert: {{slug}}'
+    delete: 'Gelöscht: {{slug}}'
+    uploadMedia: 'Foto hochgeladen: {{path}}'
+    deleteMedia: 'Foto gelöscht: {{path}}'
+
+# Nur zum Ausprobieren auf dem eigenen Rechner (npx decap-server); online wird es ignoriert
+local_backend: true
+
+media_folder: img          # hochgeladene Fotos landen im Ordner img/
+public_folder: /img
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
+collections:
+  # ------------------------------------------------------------------
+  - name: produkte
+    label: Produkte
+    label_singular: Produkt
+    description: 'Alle Ohrringe und Ringe im Shop. Nach dem Speichern ist die Änderung nach etwa einer Minute online.'
+    folder: inhalt/produkte
+    extension: json
+    format: json
+    create: true
+    delete: true
+    identifier_field: name
+    slug: '{{slug}}'
+    summary: '{{name}} · {{preis}} €'
+    sortable_fields: ['position', 'name', 'preis']
+    view_filters:
+      - { label: 'Ohrringe', field: art, pattern: '^ohrring$' }
+      - { label: 'Ringe', field: art, pattern: '^ring$' }
+      - { label: 'Ausverkauft', field: ausverkauft, pattern: true }
+    editor:
+      preview: false
+    fields:
+      - { label: 'Name', name: name, widget: string, hint: 'So heißt das Stück im Shop, z. B. Vera.' }
+      - label: 'Art'
+        name: art
+        widget: select
+        default: ohrring
+        options:
+          - { label: 'Ohrringe', value: ohrring }
+          - { label: 'Ring', value: ring }
+      - { label: 'Preis in Euro', name: preis, widget: number, value_type: float, min: 0, step: 0.5 }
+      - { label: 'Ausverkauft', name: ausverkauft, widget: boolean, default: false, hint: 'Eingeschaltet: Das Stück bleibt sichtbar, kann aber nicht gekauft werden.' }
+      - label: 'Fotos und Farben'
+        name: varianten
+        widget: list
+        label_singular: 'Farbe'
+        min: 1
+        collapsed: false
+        default: [{ farbe: '' }]
+        summary: "{{fields.farbe | default('Foto')}}"
+        hint: 'Ein Eintrag pro Farbe oder Metall (z. B. Gold und Silber), jeweils mit eigenem Foto. Gibt es das Stück nur in einer Ausführung: ein Eintrag, Farbe leer lassen.'
+        fields:
+          - { label: 'Farbe oder Metall', name: farbe, widget: string, required: false, hint: 'z. B. Fuchsia, Gold, Silber. Leer lassen, wenn es nur eine Ausführung gibt.' }
+          - { label: 'Foto', name: foto, widget: image, choose_url: false, hint: 'Hochformat sieht am besten aus.' }
+          - { label: 'Farbe des Namens auf der Startseite', name: namensfarbe, widget: color, required: false, hint: 'Optional. Passend zum Stein, hell genug für den lila Hintergrund.' }
+      - { label: 'Kurze Beschreibung', name: beschreibung, widget: text, required: false, hint: 'Optional, ein bis zwei Sätze. Leer lassen für den Standardsatz („Von Hand gemacht …“ bzw. „Größenverstellbar …“).' }
+      - { label: 'Auf der Startseite zeigen', name: startseite, widget: boolean, default: false, hint: 'Die Startseite zeigt die ersten vier Stücke mit diesem Häkchen.' }
+      - { label: 'Position im Shop', name: position, widget: number, value_type: int, default: 100, hint: 'Kleinere Zahl = weiter vorne. Abstände von 10 lassen Platz zum Dazwischenschieben.' }
+      - label: 'Bildausschnitt in der Übersicht'
+        name: bildausschnitt
+        widget: select
+        default: mitte
+        required: false
+        hint: 'Falls das Schmuckstück auf dem kleinen Bild abgeschnitten wird.'
+        options:
+          - { label: 'Mitte', value: mitte }
+          - { label: 'Etwas mehr links', value: links }
+          - { label: 'Etwas mehr rechts', value: rechts }
+
+  # ------------------------------------------------------------------
+  - name: texte
+    label: Texte
+    editor:
+      preview: false
+    files:
+      - name: startseite
+        label: 'Texte der Startseite'
+        file: inhalt/texte.json
+        description: 'Diese Texte erscheinen auf der deutschen Startseite. Englisch und Französisch bleiben wie sie sind.'
+        fields:
+          - { label: 'Satz unter dem Logo', name: hero_text, widget: string }
+          - { label: 'Überschrift über den Stücken', name: intro_h, widget: string }
+          - { label: 'Satz unter der Überschrift', name: intro_p, widget: text }
+          - { label: 'Überschrift „Von Hand gemacht“', name: gesch_h, widget: string }
+          - { label: 'Text „Von Hand gemacht“', name: gesch_p1, widget: text }
+          - { label: 'Kleiner Satz darunter', name: gesch_p2, widget: string, required: false }

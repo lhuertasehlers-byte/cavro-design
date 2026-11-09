@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAVRØ Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,100,1;1,9..144,300..700,100,1&family=Schibsted+Grotesk:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Farben der Marke ---------- */
+  :root {
+    --kalkrosa: #F7EDEF;   /* heller Grund */
+    --beere: #7E1544;      /* Markenfarbe */
+    --beere-hell: #A23A69; /* für den Übergang */
+    --tiefbeere: #3D0A24;  /* Textfarbe statt Schwarz */
+    --orange: #E5481B;     /* Logo-Orange */
+    --weiss: #FDFAF9;      /* Shop-Hintergrund: fast weiß, ganz leicht warm */
+    --rosa: #E98AB0;       /* Linien aus dem Logo */
+    --namen: "Fraunces", Georgia, serif;          /* Produktnamen und Beschreibungen */
+    --text: "Schibsted Grotesk", system-ui, sans-serif; /* Preise, Knöpfe, Menü */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: clip; }
+  body { background: var(--kalkrosa); color: var(--tiefbeere); font-family: var(--text); font-size: 17px; line-height: 1.55; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* Warmer Filter auf allen Produktfotos: etwas goldener, weniger kühles Weiß */
+  .foto img, .vorschau img, .korb li img { filter: sepia(.22) saturate(1.18) hue-rotate(-8deg) brightness(1.03) contrast(.97); }
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: clamp(20px, 4vw, 48px); padding-right: clamp(20px, 4vw, 48px); }
+  /* Fraunces mit weichen, leicht verspielten Formen (wie 70er-Jahre-Schrift) */
+  .weich { font-family: var(--namen); font-variation-settings: "SOFT" 100, "WONK" 1; font-style: italic; font-weight: 400; }
+
+  /* ---------- Kopfzeile ---------- */
+  /* Leiste bleibt beim Scrollen oben stehen; Schrift orange auf Lila */
+  .kopf { background: var(--beere); color: var(--orange); position: sticky; top: 0; z-index: 9; transition: box-shadow .3s; }
+  .kopf.gescrollt { box-shadow: 0 6px 24px rgba(61,10,36,.35); }
+  .kopf .wrap { display: flex; align-items: center; gap: 32px; height: 80px; }
+  .kopf .badge { width: 54px; height: 54px; flex: none; }
+  .kopf nav { display: flex; gap: 28px; font-weight: 500; }
+  .kopf nav a { text-decoration: none; }
+  .kopf nav a:hover, .korb-knopf:hover .wort, .sprache > button:hover { color: var(--rosa); }
+
+  /* Warenkorb: kleiner Beutel aus Linien, Zahl im orangen Punkt */
+  .korb-knopf { margin-left: auto; display: flex; align-items: center; gap: 10px; background: none; border: 0; color: var(--orange); padding: 6px 4px; }
+  .korb-knopf .wort { font-size: 17px; }
+  .beutel { position: relative; width: 34px; height: 34px; }
+  .beutel svg { width: 100%; height: 100%; color: var(--orange); }
+  .korb-knopf:hover .beutel svg { color: var(--rosa); }
+  .beutel b { position: absolute; right: -8px; top: -6px; min-width: 22px; height: 22px; border-radius: 50%; background: var(--kalkrosa); color: var(--beere); font-weight: 700; font-size: 12px; display: grid; place-items: center; padding: 0 5px; }
+  .beutel.hupf { animation: hupf .5s ease; }
+  @keyframes hupf { 30% { transform: translateY(-6px) rotate(-6deg); } 60% { transform: translateY(0) rotate(4deg); } }
+
+  /* ---------- Ansichten: Startseite, nur Ohrringe, nur Ringe ---------- */
+  .logo-link { display: block; line-height: 0; }
+  .kopf nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+  /* Startseite (lila) · Shop: Alle/Ohrringe/Ringe (hell) · einzelnes Produkt (hell) */
+  .shop-seite, .produkt-seite { display: none; }
+  body[data-ansicht="shop"] .shop-seite, body[data-ansicht="produkt"] .produkt-seite { display: block; }
+  body:not([data-ansicht="start"]) .start-teil { display: none; }
+  /* Übergang zum Fuß: auf der Startseite aus dem Lila, im Shop aus dem Hellen */
+  #zwFuss { background: var(--beere); }
+  #zwFuss path:nth-child(1) { fill: #6E103A; }
+  #zwFuss path:nth-child(2) { fill: #571030; }
+  body:not([data-ansicht="start"]) #zwFuss { background: var(--weiss); }
+  body:not([data-ansicht="start"]) #zwFuss path:nth-child(1) { fill: var(--rosa); }
+  body:not([data-ansicht="start"]) #zwFuss path:nth-child(2) { fill: var(--beere); }
+
+  /* Überschriften in der Logo-Schrift: fett, eng, orange */
+  body .intro h2, body .raster-kopf h2, body .geschichte h2, body .ringe h2, body .korb h2 {
+    font-family: var(--text); font-weight: 900; font-style: normal; font-variation-settings: normal;
+    letter-spacing: -.035em; color: var(--orange);
+  }
+  .intro h2 { line-height: .95; }
+  /* Auf dem orangen Ringe-Streifen wäre Orange unsichtbar, dort Beere */
+  body .ringe h2 { color: var(--beere); }
+
+  /* ---------- Hero ---------- */
+  .hero { background: var(--beere); color: var(--kalkrosa); position: relative; }
+  .hero .wrap { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 24px; min-height: 560px; padding-top: 20px; padding-bottom: 40px; }
+  .hero h1 { font-family: var(--text); font-weight: 900; color: var(--orange); font-size: clamp(72px, 12vw, 176px); line-height: .85; letter-spacing: -.04em; }
+  .hero p { font-family: var(--text); font-weight: 700; font-size: 17px; line-height: 1.4; letter-spacing: -.005em; max-width: 30ch; margin: 18px 0 34px; }
+  /* Knopf mit zweitem Ring drumherum, wie die Linien im Logo */
+  /* Knöpfe: keine Kästen, sondern die Linien aus dem Logo als sanfte Schleifen drumherum */
+  .knopf, .rein { position: relative; isolation: isolate; display: inline-block; background: none; border: 0; color: var(--kalkrosa); text-decoration: none; --schleife: var(--rosa); --fuellung: var(--orange); }
+  .knopf { padding: 16px 34px; font-weight: 700; font-size: 17px; }
+  .rein { padding: 9px 20px; font-weight: 500; font-size: 14px; --fuellung: none; }
+  .schleife { position: absolute; inset: -9px -14px; width: calc(100% + 28px); height: calc(100% + 18px); z-index: -1; overflow: visible; pointer-events: none; }
+  .schleife path { fill: none; stroke: var(--schleife); stroke-width: 1.2; vector-effect: non-scaling-stroke; transform-origin: 100px 50px; animation: schwingen var(--dauer) ease-in-out infinite alternate; transition: transform .4s; }
+  .schleife path.fuellung { fill: var(--fuellung); stroke: none; animation-duration: 9s; }
+  @keyframes schwingen { from { transform: rotate(-1.6deg) scale(1); } to { transform: rotate(1.6deg) scale(1.02); } }
+  .knopf:hover .schleife path:not(.fuellung), .rein:hover .schleife path:not(.fuellung) { stroke: var(--kalkrosa); }
+  .rein:hover .schleife path.fuellung { fill: rgba(247,237,239,.12); }
+  @media (prefers-reduced-motion: reduce) { .schleife path { animation: none; } }
+
+  /* Das Logo als bewegtes Bild */
+  .logo-gross { position: relative; aspect-ratio: 1; width: min(100%, 560px); justify-self: end; }
+  .logo-gross svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .logo-gross .linie { transform-origin: 100px 100px; animation: drehen var(--dauer) linear infinite; animation-direction: var(--richtung); }
+  /* Das Wort dreht sich um seine eigene Mitte (das V), wie ein Uhrzeiger */
+  .logo-gross .wort { transform-origin: 100px 100px; animation: drehen 26s linear infinite; }
+  @keyframes drehen { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .logo-gross .linie, .logo-gross .wort, .beutel.hupf { animation: none; } }
+
+  /* Weicher Übergang: drei Wellen vom Lila ins Helle */
+  .welle { position: absolute; left: 0; right: 0; bottom: -1px; height: 110px; width: 100%; display: block; }
+
+  /* Heller Bereich wird nach unten wärmer, damit er weich ins Orange läuft */
+  /* schlichtes, einfarbiges Lila hinter den Produkten */
+  .hell { color: var(--kalkrosa); background: var(--beere); }
+  .zwischen { display: block; width: 100%; height: 110px; margin-bottom: -1px; }
+
+  /* ---------- Geschichte ---------- */
+  .geschichte { padding-bottom: 110px; display: grid; grid-template-columns: 1fr 2fr; gap: clamp(24px, 5vw, 80px); align-items: start; }
+  .geschichte h2 { font-size: clamp(40px, 5vw, 64px); line-height: 1; color: var(--kalkrosa); }
+  .geschichte p { font-size: clamp(18px, 1.8vw, 21px); line-height: 1.55; max-width: 40ch; }
+  .geschichte p + p { margin-top: 14px; font-size: 16px; color: var(--rosa); }
+
+  /* ---------- Intro ---------- */
+  .intro { padding-top: 80px; padding-bottom: 56px; }
+  .intro h2 { font-size: clamp(42px, 6vw, 78px); line-height: 1; color: var(--kalkrosa); }
+  .intro p { max-width: 46ch; margin-top: 18px; font-size: 19px; }
+
+  /* ---------- Vera: Farbfläche wechselt mit der Farbe ---------- */
+  .vera { display: grid; grid-template-columns: minmax(0, 480px) minmax(0, 420px); justify-content: start; gap: clamp(32px, 6vw, 80px); align-items: center; margin-bottom: 110px; }
+  .vera .foto { aspect-ratio: 4/5; overflow: hidden; }
+  .vera .foto img { transition: opacity .25s; }
+  .vera .text { align-self: center; }
+  /* Der Name nimmt die gewählte Steinfarbe an */
+  .vera .name { font-size: clamp(32px, 3.6vw, 46px); line-height: 1; color: var(--ton, #F4C9D3); transition: color .5s; margin-bottom: 26px; }
+  .farben { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+  .farben button { display: flex; align-items: center; gap: 9px; border: 0; background: none; padding: 7px 16px 7px 8px; color: var(--kalkrosa); position: relative; isolation: isolate; --schleife: var(--rosa); --fuellung: none; font-size: 15px; }
+  .farben button i { width: 24px; height: 24px; border-radius: 50%; display: block; }
+  .farben .schleife { inset: -4px -6px; width: calc(100% + 12px); height: calc(100% + 8px); opacity: 0; transition: opacity .3s; }
+  .farben button[aria-pressed="true"] .schleife { opacity: 1; }
+  .farben button:hover .schleife { opacity: .5; }
+  .kaufen { display: flex; align-items: center; gap: 22px; }
+  .preis { font-weight: 700; font-size: 22px; }
+
+
+  /* Produktnamen in der Logo-Schrift: fett, eng, klein, nicht verspielt */
+  body .karte h3, body .vera .name, body .produkt .name, body .korb li strong, body .korb-knopf .wort {
+    font-family: var(--text); font-style: normal; font-variation-settings: normal; font-weight: 900; letter-spacing: -.02em;
+  }
+
+  .karte h3 .farbname { font-weight: 500; font-size: 14px; letter-spacing: 0; color: var(--kalkrosa); opacity: .75; margin-left: 8px; }
+
+  /* ---------- Ordentliches Raster ---------- */
+  .alle-knopf { text-align: center; padding: 6px 0 100px; }
+  .raster-kopf { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 26px; }
+  .raster-kopf h2 { font-size: clamp(36px, 4.5vw, 56px); color: var(--kalkrosa); line-height: 1; }
+  .raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 110px; }
+  .karte { display: flex; flex-direction: column; }
+  .karte .foto { aspect-ratio: 3/4; overflow: hidden; }
+  .karte .foto img { transition: opacity .25s; }
+  .karte .info { padding-top: 14px; display: flex; flex-direction: column; flex: 1; }
+  .karte h3 { font-size: 21px; line-height: 1.1; color: var(--ton, var(--kalkrosa)); transition: color .5s; margin-bottom: 10px; }
+  .karte .punkte { display: flex; gap: 8px; margin-bottom: 12px; }
+  .karte .punkte button { width: 24px; height: 24px; border-radius: 50%; border: 0; outline-offset: 2px; }
+  /* gewählter Punkt: feiner rosa Ring mit kleinem Abstand, Hintergrund scheint dazwischen durch */
+  .karte .punkte button[aria-pressed="true"] { outline: 1.5px solid var(--rosa); outline-offset: 2.5px; }
+  .ringe .karte .punkte button[aria-pressed="true"] { outline-color: #F6C3D6; }
+  .karte .unten { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-right: 14px; }
+  .karte .preis { font-size: 17px; font-weight: 500; }
+  .ringe .rein { --schleife: var(--kalkrosa); }
+
+  /* ---------- Ringe ---------- */
+  .ringe { background: var(--orange); color: var(--kalkrosa); padding: 40px 0 70px; }
+  /* Titel oben, darunter zwei große Ringbilder nebeneinander */
+  .ringe .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 40px; }
+  /* gleiche Breite wie die Ohrring-Karten, nur mit mehr Abstand */
+  .ringe .karte { width: calc((min(100vw, 1240px) - 2 * clamp(20px, 4vw, 48px) - 120px) / 4); }
+  /* Ausverkauft: Bild blasser, Knopf ohne Funktion */
+  .rein[disabled] { cursor: default; opacity: .7; }
+  .rein[disabled] .schleife { opacity: .4; }
+  .ringe .titel { flex-basis: 100%; text-align: center; }
+  .ringe h2 { font-size: clamp(48px, 6vw, 80px); line-height: .95; }
+
+  .ringe .titel p { font-family: var(--namen); font-variation-settings: "SOFT" 100; font-size: 21px; margin-top: 30px; max-width: 26ch; }
+  .ringe .karte { --ton: var(--kalkrosa); }
+
+  /* ---------- Fuß ---------- */
+  footer { background: var(--tiefbeere); color: var(--kalkrosa); padding: 70px 0 40px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; align-items: end; }
+  footer .gross { font-weight: 900; font-size: clamp(48px, 8vw, 110px); color: var(--orange); letter-spacing: -.04em; line-height: .85; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+
+  /* ---------- Warenkorb-Schublade ---------- */
+  .korb { visibility: hidden; position: fixed; inset: 0 0 0 auto; width: min(420px, 100%); background: var(--kalkrosa); box-shadow: -20px 0 60px rgba(61,10,36,.25); transform: translateX(100%); transition: transform .3s ease, visibility .3s; display: flex; flex-direction: column; padding: 28px; z-index: 10; }
+  .korb.offen { transform: none; visibility: visible; }
+  .korb h2 { font-size: 42px; color: var(--beere); display: flex; justify-content: space-between; align-items: center; }
+  .korb .zu { background: none; border: 0; font-size: 40px; line-height: 1; color: var(--beere); padding: 0 6px; font-style: normal; }
+  .korb ul { list-style: none; margin: 24px 0; flex: 1; overflow: auto; }
+  .korb li { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e3cfd5; }
+  .korb li img { width: 64px; height: 80px; border-radius: 0; }
+  .korb li strong { font-size: 17px; }
+  .korb li button { background: none; border: 0; color: var(--beere); text-decoration: underline; font-size: 14px; }
+  .korb .leer { display: block; opacity: .7; border: 0; }
+  .korb .versand { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 8px; opacity: .8; }
+  .korb .summe { display: flex; justify-content: space-between; font-weight: 700; font-size: 20px; margin-bottom: 20px; }
+  .korb .hinweis { font-size: 14px; opacity: .75; margin-top: 14px; }
+  .korb .knopf { width: calc(100% - 28px); margin: 0 14px; --schleife: var(--beere); }
+  .korb .knopf[disabled] { opacity: .5; cursor: not-allowed; }
+
+  /* ---------- Tablet und Handy ---------- */
+  @media (max-width: 1000px) {
+    .raster { grid-template-columns: repeat(2, 1fr); }
+    .ringe .wrap { gap: 28px 16px; }
+    .ringe .karte { width: calc((100% - 16px) / 2); }
+  }
+  @media (max-width: 860px) {
+    .kopf .wrap { gap: 18px; }
+    .kopf nav { gap: 18px; }
+    .nur-gross { display: none; }
+    .korb-knopf .wort { display: none; }
+    .hero .wrap { grid-template-columns: 1fr; padding-top: 32px; padding-bottom: 32px; min-height: 0; }
+    .logo-gross { justify-self: center; width: 92%; order: -1; }
+    .vera { grid-template-columns: 1fr; }
+    .geschichte { grid-template-columns: 1fr; }
+    .zwischen, .welle { height: 60px; }
+  }
+  @media (max-width: 520px) {
+    /* Kopfleiste am Handy: etwas enger, damit Shop, Ohrringe, Ringe, Sprache und Korb in eine Zeile passen */
+    .kopf .wrap { gap: 12px; padding-left: 16px; padding-right: 16px; }
+    .kopf .badge { width: 42px; height: 42px; }
+    .kopf nav { gap: 13px; font-size: 15px; }
+    .sprache { margin-left: auto; }
+    .raster { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .karte h3 { font-size: 18px; }
+    .karte .unten { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+
+  /* ---------- Sprachwahl oben ---------- */
+  .sprache { position: relative; margin-left: auto; }
+  .sprache > button { background: none; border: 0; color: var(--orange); font-weight: 700; font-size: 14px; letter-spacing: .02em; padding: 8px 6px; display: flex; align-items: center; gap: 6px; }
+  .sprache > button svg { width: 10px; height: 10px; transition: transform .2s; }
+  .sprache > button[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .sprache ul { list-style: none; position: absolute; right: 0; top: calc(100% + 6px); background: var(--kalkrosa); color: var(--tiefbeere); min-width: 150px; padding: 6px 0; box-shadow: 0 14px 40px rgba(61,10,36,.3); z-index: 20; display: none; }
+  .sprache ul.offen { display: block; }
+  .sprache li button { width: 100%; text-align: left; background: none; border: 0; padding: 9px 16px; color: inherit; font-size: 15px; }
+  .sprache li button:hover { background: #EBD6DC; }
+  .sprache li button[aria-current="true"] { color: var(--orange); font-weight: 700; }
+  .korb-knopf { margin-left: 0; }
+
+  /* ---------- Karten anklickbar ---------- */
+  .zum-produkt { text-decoration: none; display: block; }
+  .zum-produkt .foto img { transition: transform .5s ease, opacity .25s; }
+  .zum-produkt:hover .foto img { transform: scale(1.03); }
+  .name a { text-decoration: none; color: inherit; }
+  .produkt .name { margin-bottom: 22px; }
+  /* Ausverkauft auf der Produktseite: Bild blasser, Knopf ohne Funktion */
+  /* Ausverkauft-Knopf auf der Produktseite: nur Linien, keine durchscheinende Füllung */
+  .produkt .knopf[disabled], .vera .knopf[disabled] { cursor: default; --fuellung: none; color: rgba(247,237,239,.75); }
+  .produkt .knopf[disabled] .schleife, .vera .knopf[disabled] .schleife { opacity: .5; }
+  /* Ausverkauft: Bild bleibt voll sichtbar, oben rechts ein kleines Schild */
+  .foto { position: relative; }
+  .schild { position: absolute; top: 12px; right: 12px; background: var(--kalkrosa); color: var(--beere); font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
+
+  /* ---------- Shop: Alle Produkte, Ohrringe, Ringe (hell, schlicht, zum Verkaufen) ---------- */
+  .licht { background: var(--weiss); color: var(--tiefbeere); }
+  .shop-seite .wrap { padding-top: 56px; padding-bottom: 110px; }
+  .shop-kopf { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px 32px; padding-bottom: 22px; margin-bottom: 32px; border-bottom: 1px solid rgba(61,10,36,.12); }
+  .shop-kopf h1 { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(36px, 4.5vw, 56px); line-height: 1; }
+  .filter { display: flex; gap: 22px; font-size: 15px; }
+  .filter a { text-decoration: none; color: rgba(61,10,36,.6); padding-bottom: 3px; border-bottom: 1.5px solid transparent; }
+  .filter a:hover { color: var(--tiefbeere); }
+  .filter a[aria-current="page"] { color: var(--tiefbeere); font-weight: 700; border-color: var(--orange); }
+  .shop-raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px 20px; }
+  .shop-karte { text-decoration: none; display: block; }
+  .shop-karte .foto { aspect-ratio: 3/4; overflow: hidden; margin-bottom: 14px; background: #F1E6E8; }
+  .shop-karte .foto img { transition: transform .5s ease; }
+  .shop-karte:hover .foto img { transform: scale(1.03); }
+  .shop-karte h3 { font-weight: 900; letter-spacing: -.02em; font-size: 17px; line-height: 1.2; color: var(--tiefbeere); }
+  .shop-karte h3 span { font-weight: 400; letter-spacing: 0; font-size: 14px; color: rgba(61,10,36,.6); margin-left: 6px; }
+  .shop-karte .preis { font-size: 15px; font-weight: 400; margin-top: 4px; }
+  .shop-karte.ausverkauft .preis { color: rgba(61,10,36,.5); }
+  .licht .schild { background: var(--beere); color: var(--weiss); }
+
+  /* ---------- Produktseite (hell) ---------- */
+  .produkt-seite .wrap { padding-top: 36px; }
+  .produkt-seite .rahmen { max-width: 1040px; margin: 0 auto; }
+  .zurueck { display: inline-block; color: var(--tiefbeere); font-weight: 500; font-size: 15px; text-decoration: none; margin-bottom: 26px; border-bottom: 1px solid rgba(61,10,36,.3); padding-bottom: 2px; }
+  .zurueck:hover { border-color: var(--tiefbeere); }
+  .produkt { display: grid; grid-template-columns: minmax(0, 540px) minmax(0, 400px); justify-content: space-between; gap: clamp(32px, 5vw, 72px); align-items: start; margin-bottom: 110px; }
+  .produkt .galerie .foto { aspect-ratio: 4/5; overflow: hidden; }
+  .produkt .foto img { transition: opacity .25s; }
+  /* Vorschaubilder: am großen Bildschirm links neben dem Foto, am Handy darunter */
+  .galerie.mit-vorschau { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .galerie.mit-vorschau .vorschau { order: -1; flex-direction: column; margin-top: 0; }
+  .vorschau { display: flex; gap: 10px; margin-top: 12px; }
+  .vorschau button { width: 72px; aspect-ratio: 4/5; padding: 0; border: 0; background: none; opacity: .5; outline: 1px solid transparent; outline-offset: 3px; transition: opacity .2s, outline-color .2s; }
+  @media (hover: hover) { .vorschau button:hover { opacity: .85; } }
+  .vorschau button[aria-pressed="true"] { opacity: 1; outline-color: var(--tiefbeere); }
+  .produkt .text { position: sticky; top: 112px; padding-top: 6px; }
+  .produkt .art, .produkt .wahl-titel { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--beere); margin-bottom: 12px; }
+  .produkt .name { font-size: clamp(34px, 3.4vw, 44px); line-height: 1; color: var(--beere); margin-bottom: 14px; }
+  .produkt .preis { display: flex; align-items: baseline; gap: 12px; font-size: 20px; font-weight: 500; }
+  .produkt .preis a { font-size: 13px; font-weight: 400; color: rgba(61,10,36,.6); }
+  .produkt hr { border: 0; border-top: 1px solid rgba(61,10,36,.12); margin: 26px 0; }
+  .optionen { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .optionen button { min-width: 100px; padding: 11px 20px; background: none; border: 1px solid rgba(61,10,36,.25); color: var(--tiefbeere); font-size: 15px; transition: background .2s, color .2s, border-color .2s; }
+  .optionen button:hover { border-color: var(--tiefbeere); }
+  .optionen button[aria-pressed="true"] { background: var(--beere); border-color: var(--beere); color: var(--weiss); font-weight: 500; }
+  .produkt .kaufen { display: flex; align-items: stretch; gap: 10px; margin-bottom: 28px; }
+  .menge { display: flex; align-items: center; border: 1px solid rgba(61,10,36,.25); }
+  .menge button { width: 42px; align-self: stretch; background: none; border: 0; color: var(--tiefbeere); font-size: 19px; }
+  @media (hover: hover) { .menge button:hover { background: rgba(61,10,36,.05); } }
+  .menge output { min-width: 22px; text-align: center; font-weight: 500; }
+  .kauf-knopf { flex: 1; padding: 16px 24px; background: var(--orange); color: #fff; border: 0; font-weight: 700; font-size: 16px; letter-spacing: .01em; transition: background .2s; }
+  .kauf-knopf:hover { background: #CF3E14; }
+  .kauf-knopf[disabled] { background: none; border: 1px solid rgba(61,10,36,.25); color: rgba(61,10,36,.6); cursor: default; }
+  .beschreibung { font-size: 16px; line-height: 1.6; max-width: 40ch; margin-bottom: 22px; }
+  .fakten { list-style: none; border-top: 1px solid rgba(61,10,36,.12); padding-top: 18px; display: grid; gap: 6px; font-size: 14px; color: rgba(61,10,36,.7); }
+  .fakten a { color: inherit; text-underline-offset: 3px; }
+  .auch { padding-bottom: 110px; }
+  .auch h2 { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(26px, 3vw, 34px); line-height: 1; margin-bottom: 26px; }
+  @media (max-width: 1000px) { .shop-raster { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 700px) { .shop-raster { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } .shop-seite .wrap { padding-top: 36px; } }
+  @media (max-width: 860px) {
+    .produkt { grid-template-columns: 1fr; gap: 28px; }
+    .produkt .text { position: static; }
+    .galerie.mit-vorschau { display: block; }
+    .galerie.mit-vorschau .vorschau { flex-direction: row; margin-top: 12px; }
+    .sprache > button { padding: 8px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="kopf">
+  <div class="wrap">
+    <!-- Nachbau des runden Logos; später durch das echte Logo ersetzen -->
+    <a href="#start" class="logo-link" aria-label="CAVRØ">
+    <svg class="badge" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="48" fill="#7E1544"/>
+      <g fill="none" stroke="#E98AB0" stroke-width=".8"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="41"/><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="31"/></g>
+      <text x="50" y="56" text-anchor="middle" font-family="Schibsted Grotesk, sans-serif" font-weight="900" font-size="17" fill="#E5481B">CAVRØ</text>
+      <path d="M50 2l1.6 3.6 3.9.3-3 2.5 1 3.8L50 10.2l-3.5 2 1-3.8-3-2.5 3.9-.3z" fill="#F7EDEF"/>
+    </svg>
+    </a>
+    <nav aria-label="Menü">
+      <a href="#alle" data-t="nav_shop">Shop</a>
+      <a href="#ohrringe" data-t="nav_ohrringe">Ohrringe</a>
+      <a href="#ringe" data-t="nav_ringe">Ringe</a>
+      <a href="impressum.html" class="nur-gross" data-t="nav_kontakt">Kontakt</a>
+    </nav>
+    <div class="sprache">
+      <button id="spracheKnopf" aria-expanded="false" aria-controls="spracheListe" aria-label="Sprache">
+        <span id="spracheKurz">DE</span>
+        <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <ul id="spracheListe">
+        <li><button data-sprache="de">Deutsch</button></li>
+        <li><button data-sprache="en">English</button></li>
+        <li><button data-sprache="fr">Français</button></li>
+      </ul>
+    </div>
+    <button class="korb-knopf" id="korbAuf" aria-controls="korb">
+      <span class="wort" data-t="korb">Korb</span>
+      <span class="beutel" id="beutel">
+        <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 12h22l-2 18H8z"/><path d="M12 12c0-6 2.5-8 5-8s5 2 5 8"/>
+        </svg>
+        <b id="anzahl">0</b>
+      </span>
+    </button>
+  </div>
+</header>
+
+<section class="hero start-teil">
+  <div class="wrap">
+    <div>
+      <h1>CAVRØ</h1>
+      <p data-t="hero_text">Ohrringe und Ringe, von Hand gebogen und aufgefädelt.</p>
+      <a class="knopf" href="#alle"><span data-t="hero_knopf">Alle Produkte ansehen</span></a>
+    </div>
+    <div class="logo-gross">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <g id="linien"></g>
+        <g class="wort">
+          <text x="100" y="100" text-anchor="middle" dominant-baseline="central" font-family="Schibsted Grotesk, sans-serif" font-weight="900" font-size="26" fill="#E5481B" letter-spacing="-.6">CAVRØ</text>
+        </g>
+        <path d="M100 -2l2.4 5.3 5.8.5-4.4 3.8 1.3 5.6L100 10.3l-5.1 2.9 1.3-5.6-4.4-3.8 5.8-.5z" fill="#F7EDEF"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<main class="hell start-teil">
+  <div class="wrap intro">
+    <h2 class="weich" data-t="intro_h">Jedes Stück hat einen Namen.</h2>
+    <p data-t="intro_p">Und ein bisschen Charakter. Such dir aus, wer mit dir rausgeht.</p>
+  </div>
+
+  <div class="wrap">
+    <!-- nur eine kleine Auswahl (Häkchen „Auf der Startseite zeigen“ im Verwaltungsbereich), der Rest im Shop -->
+    <div class="raster" id="rasterStart"></div>
+    <div class="alle-knopf"><a class="knopf" href="#alle"><span data-t="hero_knopf">Alle Produkte ansehen</span></a></div>
+  </div>
+  <div class="wrap geschichte">
+    <h2 class="weich" data-t="gesch_h">Von Hand gemacht</h2>
+    <div>
+      <p data-t="gesch_p1">Ich mache jedes Stück selbst, mit Zange, Draht und ein bisschen Geduld. Die Steine suche ich nach Farbe aus, und wenn eins fertig ist, bekommt es einen Namen.</p>
+      <p data-t="gesch_p2">Deshalb sieht keins genau aus wie das andere.</p>
+    </div>
+  </div>
+</main>
+
+<!-- Shop: #alle, #ohrringe, #ringe – hell und schlicht -->
+<main class="licht shop-seite" id="shopSeite">
+  <div class="wrap">
+    <div class="shop-kopf">
+      <h1 id="shopTitel"></h1>
+      <nav class="filter" aria-label="Filter">
+        <a href="#alle" data-t="filter_alle">Alle</a>
+        <a href="#ohrringe" data-t="nav_ohrringe">Ohrringe</a>
+        <a href="#ringe" data-t="nav_ringe">Ringe</a>
+      </nav>
+    </div>
+    <div class="shop-raster" id="rasterShop"></div>
+  </div>
+</main>
+
+<!-- Eigene Seite für ein einzelnes Produkt (#p-vera, #p-greta …) -->
+<main class="licht produkt-seite" id="produktSeite">
+  <div class="wrap">
+    <div class="rahmen">
+      <a class="zurueck" id="zurueck" href="#ohrringe"></a>
+      <section class="produkt" id="produkt"></section>
+    </div>
+    <div class="auch">
+      <h2 data-t="auch">Könnte dir auch gefallen</h2>
+      <div class="shop-raster" id="rasterAuch"></div>
+    </div>
+  </div>
+</main>
+
+<svg id="zwFuss" class="zwischen" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 44 C 240 90, 500 10, 740 46 S 1200 92, 1440 40 V110 H0z" fill="#B0302E"/>
+  <path d="M0 66 C 280 30, 540 100, 800 66 S 1230 34, 1440 70 V110 H0z" fill="#6E1433"/>
+  <path d="M0 88 C 300 66, 560 110, 820 88 S 1240 68, 1440 90 V110 H0z" fill="#3D0A24"/>
+</svg>
+<footer id="kontakt">
+  <div class="wrap">
+    <div class="gross">CAVRØ</div>
+    <nav aria-label="Fußzeile">
+      <a href="impressum.html" data-t="f_kontakt">Kontakt</a>
+      <a href="https://www.instagram.com/cavrodesign/" target="_blank" rel="noopener">Instagram</a>
+      <a href="impressum.html" data-t="f_impressum">Impressum</a>
+      <a href="datenschutz.html" data-t="f_datenschutz">Datenschutz</a>
+      <a href="agb.html" data-t="f_agb">AGB</a>
+      <a href="widerruf.html" data-t="f_widerruf">Widerruf</a>
+      <a href="versand.html" data-t="f_versand">Versand und Zahlung</a>
+    </nav>
+  </div>
+</footer>
+
+<aside class="korb" id="korb" aria-label="Warenkorb" aria-hidden="true">
+  <h2 class="weich"><span data-t="korb_h">Dein Korb</span> <button class="zu" id="korbZu" aria-label="×">×</button></h2>
+  <ul id="liste"></ul>
+  <div class="versand"><span data-t="versand">Versand mit DHL</span><span id="versand">3,67 €</span></div>
+  <div class="summe"><span data-t="summe">Summe</span><span id="summe">0 €</span></div>
+  <button class="knopf" disabled><span data-t="kasse">Zur Kasse</span></button>
+  <p class="hinweis" data-t="hinweis">Entwurf: Die Kasse mit Stripe bauen wir im nächsten Schritt.</p>
+</aside>
+
+<!-- Produkte und Texte: werden im Verwaltungsbereich (/admin) gepflegt und von bauen.js hierher geschrieben -->
+<script src="daten.js"></script>
+<script>
+  // =====================================================================
+  //  TEXTE in drei Sprachen. Neue Sprache: einfach einen Block ergänzen.
+  // =====================================================================
+  const TEXTE = {
+    de: {
+      nav_shop: 'Shop', nav_ohrringe: 'Ohrringe', nav_ringe: 'Ringe', filter_alle: 'Alle', alle_produkte: 'Alle Produkte', produkte: 'Produkte', nav_kontakt: 'Kontakt', korb: 'Korb',
+      hero_text: 'Ohrringe und Ringe, von Hand gebogen und aufgefädelt.', hero_knopf: 'Alle Produkte ansehen',
+      intro_h: 'Jedes Stück hat einen Namen.', intro_p: 'Und ein bisschen Charakter. Such dir aus, wer mit dir rausgeht.',
+      lieblinge: 'Veras Lieblinge', ringe_h: 'Ringe',
+      gesch_h: 'Von Hand gemacht',
+      gesch_p1: 'Ich mache jedes Stück selbst, mit Zange, Draht und ein bisschen Geduld. Die Steine suche ich nach Farbe aus, und wenn eins fertig ist, bekommt es einen Namen.',
+      gesch_p2: 'Deshalb sieht keins genau aus wie das andere.',
+      in_warenkorb: 'In den Warenkorb', in_korb: 'In den Korb', ausverkauft: 'Ausverkauft',
+      farbe_waehlen: 'Farbe wählen', farbe: 'Farbe', material: 'Gold oder Silber', zeile: 'Von Hand gemacht. Jedes Stück ist ein bisschen anders.',
+      art_ring: 'Ring', art_ohrring: 'Ohrringe', zzgl_versand: 'zzgl. Versand', weniger: 'Eins weniger', mehr: 'Eins mehr', anzahl: 'Anzahl',
+      beschr_ring: 'Größenverstellbar, passt sich deinem Finger an. Von Hand gebogen.', fakt_versand: 'Versand mit DHL:', fakt_widerruf: '14 Tage Widerrufsrecht',
+      zurueck: 'Zurück', alle_ohrringe: 'Alle Ohrringe', alle_ringe: 'Alle Ringe', auch: 'Könnte dir auch gefallen',
+      korb_h: 'Dein Korb', summe: 'Summe', versand: 'Versand mit DHL', kasse: 'Zur Kasse', entfernen: 'Entfernen',
+      leer: 'Noch leer. Vera wartet schon.', hinweis: 'Entwurf: Die Kasse mit Stripe bauen wir im nächsten Schritt.',
+      f_kontakt: 'Kontakt', f_impressum: 'Impressum', f_datenschutz: 'Datenschutz', f_agb: 'AGB', f_widerruf: 'Widerruf', f_versand: 'Versand und Zahlung'
+    },
+    en: {
+      nav_shop: 'Shop', nav_ohrringe: 'Earrings', nav_ringe: 'Rings', filter_alle: 'All', alle_produkte: 'All products', produkte: 'products', nav_kontakt: 'Contact', korb: 'Bag',
+      hero_text: 'Earrings and rings, bent and threaded by hand.', hero_knopf: 'See all products',
+      intro_h: 'Every piece has a name.', intro_p: 'And a bit of character. Pick who’s coming out with you.',
+      lieblinge: 'Vera’s favourites', ringe_h: 'Rings',
+      gesch_h: 'Made by hand',
+      gesch_p1: 'I make every piece myself, with pliers, wire and a little patience. I choose the stones by colour, and once a piece is finished, it gets a name.',
+      gesch_p2: 'That’s why no two look exactly alike.',
+      in_warenkorb: 'Add to bag', in_korb: 'Add to bag', ausverkauft: 'Sold out',
+      farbe_waehlen: 'Choose a colour', farbe: 'Colour', material: 'Gold or silver', zeile: 'Made by hand. Every piece is a little different.',
+      art_ring: 'Ring', art_ohrring: 'Earrings', zzgl_versand: 'plus shipping', weniger: 'One less', mehr: 'One more', anzahl: 'Quantity',
+      beschr_ring: 'Adjustable, fits your finger. Bent by hand.', fakt_versand: 'Shipped with DHL:', fakt_widerruf: '14-day right of withdrawal',
+      zurueck: 'Back', alle_ohrringe: 'All earrings', alle_ringe: 'All rings', auch: 'You might also like',
+      korb_h: 'Your bag', summe: 'Total', versand: 'Shipping with DHL', kasse: 'Checkout', entfernen: 'Remove',
+      leer: 'Still empty. Vera is waiting.', hinweis: 'Draft: checkout with Stripe comes next.',
+      f_kontakt: 'Contact', f_impressum: 'Legal notice', f_datenschutz: 'Privacy', f_agb: 'Terms', f_widerruf: 'Returns', f_versand: 'Shipping and payment'
+    },
+    fr: {
+      nav_shop: 'Boutique', nav_ohrringe: 'Boucles', nav_ringe: 'Bagues', filter_alle: 'Tout', alle_produkte: 'Tous les produits', produkte: 'produits', nav_kontakt: 'Contact', korb: 'Panier',
+      hero_text: 'Boucles d’oreilles et bagues, façonnées et enfilées à la main.', hero_knopf: 'Voir tous les produits',
+      intro_h: 'Chaque pièce a un prénom.', intro_p: 'Et un peu de caractère. Choisis celle qui sort avec toi.',
+      lieblinge: 'Les favorites de Vera', ringe_h: 'Bagues',
+      gesch_h: 'Fait main',
+      gesch_p1: 'Je fabrique chaque pièce moi-même, avec une pince, du fil et un peu de patience. Je choisis les pierres selon leur couleur, et quand une pièce est terminée, elle reçoit un prénom.',
+      gesch_p2: 'C’est pourquoi aucune ne ressemble exactement à une autre.',
+      in_warenkorb: 'Ajouter au panier', in_korb: 'Ajouter', ausverkauft: 'Épuisé',
+      farbe_waehlen: 'Choisir une couleur', farbe: 'Couleur', material: 'Or ou argent', zeile: 'Fait main. Chaque pièce est un peu différente.',
+      art_ring: 'Bague', art_ohrring: 'Boucles d’oreilles', zzgl_versand: 'hors livraison', weniger: 'Un de moins', mehr: 'Un de plus', anzahl: 'Quantité',
+      beschr_ring: 'Réglable, elle s’adapte à ton doigt. Façonnée à la main.', fakt_versand: 'Livraison DHL :', fakt_widerruf: 'Droit de rétractation de 14 jours',
+      zurueck: 'Retour', alle_ohrringe: 'Toutes les boucles', alle_ringe: 'Toutes les bagues', auch: 'Tu aimeras peut-être aussi',
+      korb_h: 'Ton panier', summe: 'Total', versand: 'Livraison DHL', kasse: 'Commander', entfernen: 'Retirer',
+      leer: 'Encore vide. Vera t’attend.', hinweis: 'Brouillon : le paiement avec Stripe arrive bientôt.',
+      f_kontakt: 'Contact', f_impressum: 'Mentions légales', f_datenschutz: 'Confidentialité', f_agb: 'CGV', f_widerruf: 'Rétractation', f_versand: 'Livraison et paiement'
+    }
+  };
+  const FARBEN = {
+    fuchsia:  { de: 'Fuchsia', en: 'Fuchsia', fr: 'Fuchsia' },
+    salbeigruen: { de: 'Salbeigrün', en: 'Sage', fr: 'Vert sauge' },
+    senffarben:  { de: 'Senffarben', en: 'Mustard', fr: 'Moutarde' },
+    emerald:  { de: 'Emerald', en: 'Emerald', fr: 'Émeraude' },
+    amethyst: { de: 'Amethyst', en: 'Amethyst', fr: 'Améthyste' },
+    gold:     { de: 'Gold', en: 'Gold', fr: 'Or' },
+    silber:   { de: 'Silber', en: 'Silver', fr: 'Argent' }
+  };
+  let sprache = 'de';
+  try { sprache = localStorage.getItem('cavro-sprache') || 'de'; } catch (e) {}
+  if (!TEXTE[sprache]) sprache = 'de';
+  const t = k => TEXTE[sprache][k] || TEXTE.de[k] || k;
+
+  // =====================================================================
+  //  PRODUKTE kommen aus daten.js (gepflegt im Verwaltungsbereich /admin).
+  //  Eigene Texte von dort ersetzen die deutschen Standardtexte.
+  // =====================================================================
+  const DATEN = window.CAVRO_DATEN || { produkte: [], startseite: [], texte: {} };
+  const PRODUKTE = DATEN.produkte;
+  Object.entries(DATEN.texte || {}).forEach(([k, v]) => { if (v && String(v).trim()) TEXTE.de[k] = String(v).trim(); });
+  // Farbname in der gewählten Sprache; neue Farben aus dem Verwaltungsbereich stehen nur auf Deutsch da
+  // Foto-Adresse: online auf Netlify in passender Größe, sonst die Originaldatei
+  const foto = (src, breite) => DATEN.netlifyBilder ? '/.netlify/images?url=/' + encodeURI(src) + '&w=' + breite : src;
+  const farbName = v => (FARBEN[v.farbe] && FARBEN[v.farbe][sprache]) || v.farbname || v.farbe;
+  const produkt = id => PRODUKTE.find(p => p.id === id);
+  // #p-vera-salbei → { p: Vera, idx: 1 }   (#p-vera → erste Farbe bzw. zuletzt gewählte)
+  function ausHash() {
+    if (!location.hash.startsWith('#p-')) return null;
+    const [id, farbe] = location.hash.slice(3).split('-');
+    const p = produkt(id);
+    if (!p) return null;
+    let idx = gewaehlt[id] || 0;
+    if (farbe && p.varianten) { const i = p.varianten.findIndex(v => v.farbe === farbe); if (i >= 0) idx = i; }
+    return { p, idx };
+  }
+  const link = (p, i) => '#p-' + p.id + (p.varianten ? '-' + p.varianten[i].farbe : '');
+  // gewählte Farbe pro Produkt merken, damit Karte und Produktseite zusammenpassen
+  const gewaehlt = {};
+  const variante = p => p.varianten ? p.varianten[gewaehlt[p.id] || 0] : p;
+  const ton = (p, v) => (v && v.ton) || p.ton || 'var(--kalkrosa)';
+  const istMetall = p => p.varianten && ['gold', 'silber'].includes(p.varianten[0].farbe);
+  const titel = (p, v) => p.varianten ? p.name + ', ' + farbName(v) : p.name;
+
+  const el = id => document.getElementById(id);
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // ---------- Bausteine ----------
+  function kaufKnopf(p, klasse, textKey, idx) {
+    return p.ausverkauft
+      ? `<button class="${klasse}" disabled><span>${t('ausverkauft')}</span></button>`
+      : `<button class="${klasse}" data-rein="${p.id}"${idx !== undefined ? ` data-index="${idx}"` : ''}><span>${t(textKey)}</span></button>`;
+  }
+  const schild = p => p.ausverkauft ? `<span class="schild">${t('ausverkauft')}</span>` : '';
+  function karte(p, i = 0) {
+    const v = p.varianten ? p.varianten[i] : p;
+    const farbname = p.varianten ? `<span class="farbname">${farbName(v)}</span>` : '';
+    return `<article class="karte${p.ausverkauft ? ' ausverkauft' : ''}" data-id="${p.id}" style="--ton:${ton(p, v)}">
+      <a class="zum-produkt" href="${link(p, i)}">
+        <div class="foto"><img src="${foto(v.bild, 700)}" alt="${titel(p, v)}"${p.pos ? ` style="object-position:${p.pos}"` : ''}>${schild(p)}</div>
+      </a>
+      <div class="info">
+        <a class="zum-produkt" href="${link(p, i)}"><h3 class="weich">${p.name}${farbname}</h3></a>
+        <div class="unten"><span class="preis">${p.preis} €</span>${kaufKnopf(p, 'rein', 'in_korb', i)}</div>
+      </div>
+    </article>`;
+  }
+  // Shop-Karte: schlicht, nur Foto, Name, Farbe, Preis – Klick führt zur Produktseite
+  function shopKarte(p, i = 0) {
+    const v = p.varianten ? p.varianten[i] : p;
+    const farbname = p.varianten ? `<span>${farbName(v)}</span>` : '';
+    return `<a class="shop-karte${p.ausverkauft ? ' ausverkauft' : ''}" href="${link(p, i)}">
+      <div class="foto"><img src="${foto(v.bild, 700)}" alt="${titel(p, v)}" loading="lazy"${p.pos ? ` style="object-position:${p.pos}"` : ''}>${schild(p)}</div>
+      <h3>${p.name}${farbname}</h3>
+      <p class="preis">${euro2(p.preis)}</p>
+    </a>`;
+  }
+  // jede Farbe als eigene Karte, Ausverkauftes zuletzt
+  const alleShopKarten = liste => [...liste].sort((a, b) => !!a.ausverkauft - !!b.ausverkauft)
+    .map(p => p.varianten ? p.varianten.map((_, i) => shopKarte(p, i)).join('') : shopKarte(p)).join('');
+  // Produktseite: großes Foto (+ kleine Vorschaubilder), daneben Name, Preis, Auswahl, Menge, Knopf
+  function produktAnsicht(p) {
+    const idx = p.varianten ? (gewaehlt[p.id] || 0) : 0;
+    const v = variante(p);
+    const pos = p.pos ? ` style="object-position:${p.pos}"` : '';
+    // Auswahl nur, wenn es wirklich mehrere Farben/Metalle gibt
+    const auswahl = p.varianten && p.varianten.length > 1;
+    const ueber = auswahl ? t(istMetall(p) ? 'material' : 'farbe') : '';
+    const vorschau = auswahl ? '<div class="vorschau">' + p.varianten.map((w, i) =>
+      `<button aria-pressed="${i === idx}" aria-label="${farbName(w)}" data-farbe-von="${p.id}" data-index="${i}"><img src="${foto(w.bild, 200)}" alt=""${pos}></button>`).join('') + '</div>' : '';
+    const optionen = auswahl ? `<p class="wahl-titel" id="wahlTitel">${ueber}</p><div class="optionen" role="group" aria-labelledby="wahlTitel">` + p.varianten.map((w, i) =>
+      `<button aria-pressed="${i === idx}" data-farbe-von="${p.id}" data-index="${i}">${farbName(w)}</button>`).join('') + '</div>' : '';
+    const kaufen = p.ausverkauft
+      ? `<button class="kauf-knopf" disabled>${t('ausverkauft')}</button>`
+      : `<div class="menge" role="group" aria-label="${t('anzahl')}"><button data-menge="-1" aria-label="${t('weniger')}">−</button><output id="menge" aria-live="polite">1</output><button data-menge="1" aria-label="${t('mehr')}">+</button></div>
+         <button class="kauf-knopf" data-rein="${p.id}">${t('in_warenkorb')}</button>`;
+    return `<div class="galerie${auswahl ? ' mit-vorschau' : ''}">
+        <div class="foto"><img src="${foto(v.bild, 1200)}" alt="${titel(p, v)}"${pos}>${schild(p)}</div>
+        ${vorschau}
+      </div>
+      <div class="text">
+        <p class="art">${t(p.art === 'ring' ? 'art_ring' : 'art_ohrring')}</p>
+        <h1 class="name">${p.name}</h1>
+        <p class="preis">${euro2(p.preis)} <a href="versand.html">${t('zzgl_versand')}</a></p>
+        <hr>
+        ${optionen}
+        <div class="kaufen">${kaufen}</div>
+        <p class="beschreibung">${p.beschreibung || t(p.art === 'ring' ? 'beschr_ring' : 'zeile')}</p>
+        <ul class="fakten">
+          <li>${t('fakt_versand')} ${euro2(VERSAND)}</li>
+          <li><a href="widerruf.html">${t('fakt_widerruf')}</a></li>
+        </ul>
+      </div>`;
+  }
+
+  // ---------- Alles zeichnen (auch nach Sprachwechsel) ----------
+  function zeichnen() {
+    document.documentElement.lang = sprache;
+    document.querySelectorAll('[data-t]').forEach(e => e.textContent = t(e.dataset.t));
+    el('spracheKurz').textContent = sprache.toUpperCase();
+    document.querySelectorAll('[data-sprache]').forEach(b => b.setAttribute('aria-current', b.dataset.sprache === sprache));
+
+    el('rasterStart').innerHTML = DATEN.startseite.map(produkt).filter(Boolean).map(p => karte(p, 0)).join('');
+    shopZeigen();
+    produktSeite();
+    korbZeigen();
+    schleifen();
+  }
+
+  // ---------- Shop: Alle Produkte, Ohrringe, Ringe ----------
+  const SHOP = { alle: null, ohrringe: 'ohrring', ringe: 'ring' };
+  function shopZeigen() {
+    const ziel = location.hash.slice(1);
+    if (!(ziel in SHOP)) return;
+    el('shopTitel').textContent = ziel === 'alle' ? t('alle_produkte') : ziel === 'ohrringe' ? t('art_ohrring') : t('nav_ringe');
+    el('rasterShop').innerHTML = alleShopKarten(PRODUKTE.filter(p => !SHOP[ziel] || p.art === SHOP[ziel]));
+    document.querySelectorAll('.filter a').forEach(a => {
+      if (a.getAttribute('href') === '#' + ziel) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+
+  // ---------- Produktseite ----------
+  function produktSeite() {
+    const h = ausHash();
+    if (!h) return;
+    const p = h.p;
+    gewaehlt[p.id] = h.idx;
+    const box = el('produkt');
+    box.innerHTML = produktAnsicht(p);
+    box.classList.toggle('ausverkauft', !!p.ausverkauft);
+    // „Zurück“ führt dorthin, wo man vorher war (Startseite, Ohrringe, Ringe oder anderes Produkt)
+    el('zurueck').textContent = t('zurueck');
+    el('zurueck').href = verlauf.length ? verlauf[verlauf.length - 1].hash : '#alle';
+    // vier andere Stücke derselben Art, Ausverkauftes zuletzt
+    const andere = PRODUKTE.filter(x => x.art === p.art && x.id !== p.id).sort((a, b) => !!a.ausverkauft - !!b.ausverkauft).slice(0, 4);
+    el('rasterAuch').innerHTML = andere.map(x => shopKarte(x, 0)).join('');
+  }
+
+  // ---------- Klicks: Farbe wählen, in den Korb ----------
+  document.addEventListener('click', e => {
+    const farbe = e.target.closest('[data-farbe-von]');
+    if (farbe) {
+      gewaehlt[farbe.dataset.farbeVon] = +farbe.dataset.index;
+      const p = produkt(farbe.dataset.farbeVon), v = variante(p);
+      // nur die Stelle aktualisieren, in der geklickt wurde, mit sanftem Bildwechsel
+      const box = farbe.closest('.karte, .vera, .produkt');
+      box.style.setProperty('--ton', ton(p, v));
+      box.querySelectorAll('[data-farbe-von]').forEach(b => b.setAttribute('aria-pressed', b.dataset.index === farbe.dataset.index));
+      // auf der Produktseite zeigt die Adresse die gewählte Farbe (zum Teilen)
+      if (box.id === 'produkt') history.replaceState(null, '', link(p, +farbe.dataset.index));
+      const img = box.querySelector('.foto img');
+      const neu = foto(v.bild, 1200);
+      if (img.getAttribute('src') === neu) return;
+      img.style.opacity = 0;
+      setTimeout(() => { img.src = neu; img.alt = titel(p, v); img.style.opacity = 1; }, 200);
+      return;
+    }
+    const plusMinus = e.target.closest('[data-menge]');
+    if (plusMinus) {
+      const m = el('menge');
+      m.textContent = Math.min(9, Math.max(1, +m.textContent + +plusMinus.dataset.menge));
+      return;
+    }
+    const rein = e.target.closest('[data-rein]');
+    if (rein) {
+      const p = produkt(rein.dataset.rein);
+      const idx = p.varianten ? (rein.dataset.index !== undefined ? +rein.dataset.index : (gewaehlt[p.id] || 0)) : 0;
+      const menge = rein.closest('.produkt') ? +el('menge').textContent : 1;
+      if (rein.closest('.produkt')) el('menge').textContent = 1;
+      // gleiches Stück in gleicher Farbe nur einmal im Korb, dafür mit Anzahl
+      const da = korb.find(x => x.id === p.id && x.index === idx);
+      if (da) da.menge += menge; else korb.push({ id: p.id, index: idx, menge });
+      korbZeigen(); oeffnen();
+      el('beutel').classList.remove('hupf'); void el('beutel').offsetWidth; el('beutel').classList.add('hupf');
+    }
+  });
+
+  // ---------- Warenkorb ----------
+  const korb = [];
+  const VERSAND = 3.67;
+  const ort = () => sprache === 'en' ? 'en-GB' : sprache;
+  const euro = n => n.toLocaleString(ort(), { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + ' €';
+  const euro2 = n => n.toLocaleString(ort(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';   // 18,00 €
+  function korbZeigen() {
+    el('anzahl').textContent = korb.reduce((s, x) => s + x.menge, 0);
+    // Versand: 3,67 € pro Bestellung, nur wenn etwas im Korb liegt
+    const waren = korb.reduce((s, x) => s + produkt(x.id).preis * x.menge, 0);
+    const versand = korb.length ? VERSAND : 0;
+    el('versand').textContent = euro(VERSAND);
+    el('versand').parentElement.hidden = !korb.length;
+    el('summe').textContent = euro(waren + versand);
+    el('liste').innerHTML = korb.length ? '' : `<li class="leer">${t('leer')}</li>`;
+    korb.forEach((x, i) => {
+      const p = produkt(x.id), v = p.varianten ? p.varianten[x.index] : p;
+      const li = document.createElement('li');
+      li.innerHTML = `<img src="${foto(v.bild, 200)}" alt=""><div><strong>${titel(p, v)}</strong><br>${x.menge > 1 ? x.menge + ' × ' : ''}${euro(p.preis)}</div><button>${t('entfernen')}</button>`;
+      li.querySelector('button').onclick = () => { korb.splice(i, 1); korbZeigen(); };
+      el('liste').appendChild(li);
+    });
+  }
+  function oeffnen() { el('korb').classList.add('offen'); el('korb').setAttribute('aria-hidden', 'false'); el('korbZu').focus(); }
+  function schliessen() { el('korb').classList.remove('offen'); el('korb').setAttribute('aria-hidden', 'true'); }
+  el('korbAuf').onclick = oeffnen;
+  el('korbZu').onclick = schliessen;
+
+  // ---------- Sprachwahl ----------
+  const sk = el('spracheKnopf'), sl = el('spracheListe');
+  sk.onclick = () => { const auf = sl.classList.toggle('offen'); sk.setAttribute('aria-expanded', auf); };
+  sl.querySelectorAll('[data-sprache]').forEach(b => b.onclick = () => {
+    sprache = b.dataset.sprache;
+    try { localStorage.setItem('cavro-sprache', sprache); } catch (e) {}
+    sl.classList.remove('offen'); sk.setAttribute('aria-expanded', false);
+    zeichnen();
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.sprache')) { sl.classList.remove('offen'); sk.setAttribute('aria-expanded', false); } });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { schliessen(); sl.classList.remove('offen'); sk.setAttribute('aria-expanded', false); } });
+
+  // ---------- Ansichten: Startseite, Ohrringe, Ringe, einzelnes Produkt ----------
+  // ---------- Verlauf: woher kam man auf die Produktseite? ----------
+  const verlauf = [];          // gemerkte Orte mit Scroll-Position
+  let scrollZiel = null;       // Position, an die nach dem Zurückgehen gescrollt wird
+  document.addEventListener('click', e => {
+    if (e.target.closest('#zurueck')) {
+      e.preventDefault();
+      const z = verlauf.pop() || { hash: el('zurueck').getAttribute('href'), y: 0 };
+      scrollZiel = z.y;
+      location.hash = z.hash;
+      return;
+    }
+    const link = e.target.closest('a[href^="#p-"]');
+    if (link && link.getAttribute('href') !== location.hash) {
+      verlauf.push({ hash: location.hash || '#start', y: window.scrollY });
+    }
+  }, true);
+
+  function ansicht() {
+    const ziel = location.hash.slice(1);
+    let v = 'start';
+    if (ziel in SHOP) { v = 'shop'; shopZeigen(); }
+    if (ausHash()) { v = 'produkt'; produktSeite(); }
+    document.body.dataset.ansicht = v;
+    document.querySelectorAll('.kopf nav a').forEach(a => {
+      const aktiv = a.getAttribute('href') === '#' + ziel;
+      if (aktiv) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    // auch beim Zurück-Knopf des Browsers an die alte Stelle springen
+    const letzter = verlauf[verlauf.length - 1];
+    if (scrollZiel === null && v !== 'produkt' && letzter && letzter.hash === (location.hash || '#start')) scrollZiel = letzter.y;
+    if (scrollZiel !== null) { window.scrollTo(0, scrollZiel); scrollZiel = null; }
+    else if (v !== 'start' || ziel === 'start' || ziel === '') window.scrollTo(0, 0);
+    if (v !== 'produkt') verlauf.length = 0;
+  }
+  window.addEventListener('hashchange', ansicht);
+
+  // ---------- Logo-Linien: jede Linie leicht wellig, dreht sich einzeln ----------
+  [55, 60, 65, 70, 75, 80, 85, 90, 94, 98].forEach((r, i) => {
+    const wellen = 3 + (i % 4), tiefe = 0.7 + (i % 3) * 0.45;
+    let d = '';
+    for (let s = 0; s <= 180; s++) {
+      const w = s / 180 * Math.PI * 2, rr = r + tiefe * Math.sin(wellen * w + i);
+      d += (s ? 'L' : 'M') + (100 + rr * Math.cos(w)).toFixed(2) + ' ' + (100 + rr * Math.sin(w)).toFixed(2);
+    }
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', d + 'Z'); p.setAttribute('fill', 'none'); p.setAttribute('stroke', '#E98AB0');
+    p.setAttribute('stroke-width', i % 3 === 0 ? '.9' : '.55'); p.setAttribute('class', 'linie');
+    p.style.setProperty('--dauer', (24 + i * 9) + 's'); p.style.setProperty('--richtung', i % 2 ? 'reverse' : 'normal');
+    el('linien').appendChild(p);
+  });
+
+  // ---------- Schleifen um die Knöpfe (wie die Linien im Logo) ----------
+  function welligeEllipse(rx, ry, wellen, tiefe, versatz) {
+    let d = '';
+    for (let s = 0; s <= 120; s++) {
+      const w = s / 120 * Math.PI * 2, k = 1 + tiefe * Math.sin(wellen * w + versatz);
+      d += (s ? 'L' : 'M') + (100 + rx * k * Math.cos(w)).toFixed(2) + ' ' + (50 + ry * k * Math.sin(w)).toFixed(2);
+    }
+    return d + 'Z';
+  }
+  function schleifen() {
+    document.querySelectorAll('.knopf, .rein, .farben button').forEach((k, n) => {
+      if (k.querySelector(':scope > .schleife')) return;
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('class', 'schleife'); svg.setAttribute('viewBox', '0 0 200 100');
+      svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('aria-hidden', 'true');
+      [{ rx: 86, ry: 36, tiefe: .015, klasse: 'fuellung', dauer: 9 },
+       { rx: 93, ry: 43, tiefe: .02, dauer: 6 + (n % 3) },
+       { rx: 99, ry: 49, tiefe: .025, dauer: 8 + (n % 4) }].forEach((l, i) => {
+        const p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', welligeEllipse(l.rx, l.ry, 3 + i, l.tiefe, n + i));
+        if (l.klasse) p.setAttribute('class', l.klasse);
+        p.style.setProperty('--dauer', l.dauer + 's');
+        if (i === 2) p.style.animationDirection = 'alternate-reverse';
+        svg.appendChild(p);
+      });
+      k.prepend(svg);
+    });
+  }
+
+  zeichnen();
+  ansicht();
+
+  // Schatten unter der Leiste, sobald gescrollt wird
+  const kopf = document.querySelector('.kopf');
+  const schatten = () => kopf.classList.toggle('gescrollt', window.scrollY > 8);
+  window.addEventListener('scroll', schatten, { passive: true });
+  schatten();
+</script>
+</body>
+</html>
