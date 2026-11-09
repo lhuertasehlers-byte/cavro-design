@@ -282,22 +282,25 @@
     background: rgba(253,250,249,.94); color: var(--tiefbeere); border: 0; font-size: 13px; font-weight: 500; white-space: nowrap;
     box-shadow: 0 4px 14px rgba(61,10,36,.12);
     opacity: 0; transform: translateY(4px) scale(.85); transform-origin: bottom right; pointer-events: none;
-    transition: opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.3), background .2s, color .2s, gap .25s; }
+    /* ruhig und weich: erst sanft einblenden, beim Aufklappen langsam breiter werden */
+    --weich: cubic-bezier(.22,.61,.36,1);
+    transition: opacity .35s ease, transform .45s var(--weich), background .5s ease, color .5s ease, gap .6s var(--weich), padding .6s var(--weich); }
   .schnell-rein svg { width: 20px; height: 20px; flex: none; }
   .schnell-rein.ok, .schnell-rein:focus-visible { padding: 0 14px; }
-  .schnell-rein .wort { max-width: 0; overflow: hidden; transition: max-width .3s ease; }
+  .schnell-rein .wort { display: grid; grid-template-columns: 0fr; opacity: 0; transition: grid-template-columns .65s cubic-bezier(.4,0,.2,1), opacity .25s ease; }
+  .schnell-rein .wort > span { min-width: 0; overflow: hidden; }
   @media (hover: hover) {
     .shop-karte:hover .schnell-rein { opacity: 1; transform: none; pointer-events: auto; }
     .schnell-rein:hover { background: var(--beere); color: var(--weiss); gap: 8px; padding: 0 14px; }
-    .schnell-rein:hover .wort { max-width: 140px; }
+    .schnell-rein:hover .wort { grid-template-columns: 1fr; opacity: 1; transition: grid-template-columns .65s cubic-bezier(.4,0,.2,1), opacity .45s ease .2s; }
   }
   .shop-karte.beruehrt .schnell-rein, .shop-karte:focus-within .schnell-rein { opacity: 1; transform: none; pointer-events: auto; }
   .schnell-rein:focus-visible { gap: 8px; }
-  .schnell-rein:focus-visible .wort { max-width: 140px; }
+  .schnell-rein:focus-visible .wort { grid-template-columns: 1fr; opacity: 1; }
   /* nach dem Klick kurz „Hinzugefügt“ */
   .schnell-rein.ok { opacity: 1; transform: none; background: var(--beere); color: var(--weiss); gap: 8px; }
-  .schnell-rein.ok .wort { max-width: 140px; }
-  @media (prefers-reduced-motion: reduce) { .schnell-rein, .schnell-rein .wort { transition: none; } }
+  .schnell-rein.ok .wort { grid-template-columns: 1fr; opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .schnell-rein, .schnell-rein .wort, .schnell-rein:hover .wort { transition: none; } }
   .shop-karte .foto { aspect-ratio: 3/4; overflow: hidden; background: #F1E6E8; }
   .shop-karte .foto img { transition: transform .5s ease; }
   .shop-karte:hover .foto img { transform: scale(1.03); }
@@ -639,7 +642,7 @@
     const farbname = p.varianten ? `<span>${farbName(v)}</span>` : '';
     // Tasche mit Plus nur, wenn man das Stück kaufen kann
     const schnell = p.ausverkauft ? '' : `<button class="schnell-rein" data-rein="${p.id}" data-index="${i}" aria-label="${titel(p, v)}: ${t('hinzufuegen')}">
-          <span class="wort">${t('hinzufuegen')}</span>
+          <span class="wort"><span>${t('hinzufuegen')}</span></span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4.5 8.5h15l-1.4 12.5H5.9z"/><path d="M8.5 8.5c0-4 1.6-5.5 3.5-5.5s3.5 1.5 3.5 5.5"/><path d="M12 12.2v5.2M9.4 14.8h5.2"/></svg>
         </button>`;
     return `<article class="shop-karte${p.ausverkauft ? ' ausverkauft' : ''}">
@@ -788,7 +791,7 @@
       korbZeigen();
       if (rein.classList.contains('schnell-rein')) {
         // kurz „Hinzugefügt“ zeigen, der Korb oben hüpft und zählt hoch
-        const wort = rein.querySelector('.wort');
+        const wort = rein.querySelector('.wort > span');
         rein.classList.add('ok'); wort.textContent = t('hinzugefuegt');
         clearTimeout(rein._zeit);
         rein._zeit = setTimeout(() => { rein.classList.remove('ok'); wort.textContent = t('hinzufuegen'); }, 1600);
