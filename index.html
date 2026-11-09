@@ -261,22 +261,28 @@
   /* ---------- Shop: Alle Produkte, Ohrringe, Ringe (hell, schlicht, zum Verkaufen) ---------- */
   .licht { background: var(--weiss); color: var(--tiefbeere); }
   .shop-seite .wrap { padding-top: 56px; padding-bottom: 110px; }
-  .shop-kopf { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px 32px; padding-bottom: 22px; margin-bottom: 32px; border-bottom: 1px solid rgba(61,10,36,.12); }
-  .shop-kopf h1 { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(36px, 4.5vw, 56px); line-height: 1; }
-  .filter { display: flex; gap: 22px; font-size: 15px; }
-  .filter a { text-decoration: none; color: rgba(61,10,36,.6); padding-bottom: 3px; border-bottom: 1.5px solid transparent; }
+  .shop-titel { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(36px, 4.5vw, 56px); line-height: 1; margin-bottom: 26px; }
+  /* Leiste wie in großen Shops: links Filter, rechts Anzahl und Sortierung */
+  .shop-leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 32px; padding: 14px 0; margin-bottom: 32px; border-top: 1px solid rgba(61,10,36,.12); border-bottom: 1px solid rgba(61,10,36,.12); font-size: 14px; }
+  .filter { display: flex; gap: 24px; }
+  .filter a { text-decoration: none; color: rgba(61,10,36,.6); padding: 4px 0; border-bottom: 1.5px solid transparent; }
   .filter a:hover { color: var(--tiefbeere); }
-  .filter a[aria-current="page"] { color: var(--tiefbeere); font-weight: 700; border-color: var(--orange); }
-  .shop-raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px 20px; }
+  .filter a[aria-current="page"] { color: var(--tiefbeere); font-weight: 500; border-color: var(--tiefbeere); }
+  .shop-rechts { display: flex; align-items: center; gap: 24px; color: rgba(61,10,36,.6); }
+  .sortieren { display: flex; align-items: center; gap: 8px; }
+  .sortieren select { font: inherit; color: var(--tiefbeere); background: transparent; border: 0; padding: 4px 18px 4px 0; cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 3l4 4 4-4' fill='none' stroke='%233D0A24' stroke-width='1.4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right center; background-size: 10px; }
+  .shop-raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px 24px; }
   .shop-karte { text-decoration: none; display: block; }
   .shop-karte .foto { aspect-ratio: 3/4; overflow: hidden; margin-bottom: 14px; background: #F1E6E8; }
   .shop-karte .foto img { transition: transform .5s ease; }
   .shop-karte:hover .foto img { transform: scale(1.03); }
-  .shop-karte h3 { font-weight: 900; letter-spacing: -.02em; font-size: 17px; line-height: 1.2; color: var(--tiefbeere); }
-  .shop-karte h3 span { font-weight: 400; letter-spacing: 0; font-size: 14px; color: rgba(61,10,36,.6); margin-left: 6px; }
-  .shop-karte .preis { font-size: 15px; font-weight: 400; margin-top: 4px; }
+  /* Namen in normaler Schrift (nicht fett), Farbe daneben etwas heller */
+  .shop-karte h3 { font-weight: 500; letter-spacing: 0; font-size: 15px; line-height: 1.35; color: var(--tiefbeere); }
+  .shop-karte h3 span { font-weight: 400; color: rgba(61,10,36,.55); margin-left: 6px; }
+  .shop-karte .preis { font-size: 15px; font-weight: 400; margin-top: 2px; color: var(--tiefbeere); }
   .shop-karte.ausverkauft .preis { color: rgba(61,10,36,.5); }
-  .licht .schild { background: var(--beere); color: var(--weiss); }
+  .licht .schild { background: var(--weiss); color: var(--tiefbeere); border-radius: 0; font-size: 12px; font-weight: 500; letter-spacing: .04em; padding: 5px 10px; top: 10px; right: 10px; }
 
   /* ---------- Produktseite (hell) ---------- */
   .produkt-seite .wrap { padding-top: 36px; }
@@ -317,7 +323,7 @@
   .auch { padding-bottom: 110px; }
   .auch h2 { font-weight: 900; letter-spacing: -.035em; color: var(--beere); font-size: clamp(26px, 3vw, 34px); line-height: 1; margin-bottom: 26px; }
   @media (max-width: 1000px) { .shop-raster { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 700px) { .shop-raster { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } .shop-seite .wrap { padding-top: 36px; } }
+  @media (max-width: 700px) { .shop-raster { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } .shop-seite .wrap { padding-top: 36px; } .shop-titel { margin-bottom: 18px; } .shop-rechts { width: 100%; justify-content: space-between; } .shop-karte h3 { font-size: 14px; } .shop-karte .preis { font-size: 14px; } }
   @media (max-width: 860px) {
     .produkt { grid-template-columns: 1fr; gap: 28px; }
     .produkt .text { position: static; }
@@ -411,13 +417,24 @@
 <!-- Shop: #alle, #ohrringe, #ringe – hell und schlicht -->
 <main class="licht shop-seite" id="shopSeite">
   <div class="wrap">
-    <div class="shop-kopf">
-      <h1 id="shopTitel"></h1>
+    <h1 class="shop-titel" id="shopTitel"></h1>
+    <div class="shop-leiste">
       <nav class="filter" aria-label="Filter">
         <a href="#alle" data-t="filter_alle">Alle</a>
         <a href="#ohrringe" data-t="nav_ohrringe">Ohrringe</a>
         <a href="#ringe" data-t="nav_ringe">Ringe</a>
       </nav>
+      <div class="shop-rechts">
+        <span id="shopAnzahl"></span>
+        <label class="sortieren"><span data-t="sortieren">Sortieren nach</span>
+          <select id="sortierung">
+            <option value="empfohlen" data-t="s_empfohlen">Empfohlen</option>
+            <option value="preis-auf" data-t="s_preis_auf">Preis aufsteigend</option>
+            <option value="preis-ab" data-t="s_preis_ab">Preis absteigend</option>
+            <option value="name" data-t="s_name">Name A–Z</option>
+          </select>
+        </label>
+      </div>
     </div>
     <div class="shop-raster" id="rasterShop"></div>
   </div>
@@ -474,7 +491,7 @@
   // =====================================================================
   const TEXTE = {
     de: {
-      nav_shop: 'Shop', nav_ohrringe: 'Ohrringe', nav_ringe: 'Ringe', filter_alle: 'Alle', alle_produkte: 'Alle Produkte', produkte: 'Produkte', nav_kontakt: 'Kontakt', korb: 'Korb',
+      nav_shop: 'Shop', nav_ohrringe: 'Ohrringe', nav_ringe: 'Ringe', filter_alle: 'Alle', alle_produkte: 'Alle Produkte', produkte: 'Produkte', produkt_1: 'Produkt', sortieren: 'Sortieren nach', s_empfohlen: 'Empfohlen', s_preis_auf: 'Preis aufsteigend', s_preis_ab: 'Preis absteigend', s_name: 'Name A–Z', nav_kontakt: 'Kontakt', korb: 'Korb',
       hero_text: 'Ohrringe und Ringe, von Hand gebogen und aufgefädelt.', hero_knopf: 'Alle Produkte ansehen',
       intro_h: 'Jedes Stück hat einen Namen.', intro_p: 'Und ein bisschen Charakter. Such dir aus, wer mit dir rausgeht.',
       lieblinge: 'Veras Lieblinge', ringe_h: 'Ringe',
@@ -491,7 +508,7 @@
       f_kontakt: 'Kontakt', f_impressum: 'Impressum', f_datenschutz: 'Datenschutz', f_agb: 'AGB', f_widerruf: 'Widerruf', f_versand: 'Versand und Zahlung'
     },
     en: {
-      nav_shop: 'Shop', nav_ohrringe: 'Earrings', nav_ringe: 'Rings', filter_alle: 'All', alle_produkte: 'All products', produkte: 'products', nav_kontakt: 'Contact', korb: 'Bag',
+      nav_shop: 'Shop', nav_ohrringe: 'Earrings', nav_ringe: 'Rings', filter_alle: 'All', alle_produkte: 'All products', produkte: 'products', produkt_1: 'product', sortieren: 'Sort by', s_empfohlen: 'Featured', s_preis_auf: 'Price, low to high', s_preis_ab: 'Price, high to low', s_name: 'Name A–Z', nav_kontakt: 'Contact', korb: 'Bag',
       hero_text: 'Earrings and rings, bent and threaded by hand.', hero_knopf: 'See all products',
       intro_h: 'Every piece has a name.', intro_p: 'And a bit of character. Pick who’s coming out with you.',
       lieblinge: 'Vera’s favourites', ringe_h: 'Rings',
@@ -508,7 +525,7 @@
       f_kontakt: 'Contact', f_impressum: 'Legal notice', f_datenschutz: 'Privacy', f_agb: 'Terms', f_widerruf: 'Returns', f_versand: 'Shipping and payment'
     },
     fr: {
-      nav_shop: 'Boutique', nav_ohrringe: 'Boucles', nav_ringe: 'Bagues', filter_alle: 'Tout', alle_produkte: 'Tous les produits', produkte: 'produits', nav_kontakt: 'Contact', korb: 'Panier',
+      nav_shop: 'Boutique', nav_ohrringe: 'Boucles', nav_ringe: 'Bagues', filter_alle: 'Tout', alle_produkte: 'Tous les produits', produkte: 'produits', produkt_1: 'produit', sortieren: 'Trier par', s_empfohlen: 'Recommandé', s_preis_auf: 'Prix croissant', s_preis_ab: 'Prix décroissant', s_name: 'Nom A–Z', nav_kontakt: 'Contact', korb: 'Panier',
       hero_text: 'Boucles d’oreilles et bagues, façonnées et enfilées à la main.', hero_knopf: 'Voir tous les produits',
       intro_h: 'Chaque pièce a un prénom.', intro_p: 'Et un peu de caractère. Choisis celle qui sort avec toi.',
       lieblinge: 'Les favorites de Vera', ringe_h: 'Bagues',
@@ -602,9 +619,17 @@
       <p class="preis">${euro2(p.preis)}</p>
     </a>`;
   }
-  // jede Farbe als eigene Karte, Ausverkauftes zuletzt
-  const alleShopKarten = liste => [...liste].sort((a, b) => !!a.ausverkauft - !!b.ausverkauft)
+  // jede Farbe als eigene Karte; sortiert wie gewählt, Ausverkauftes immer zuletzt
+  let sortierung = 'empfohlen';
+  const SORTEN = {
+    empfohlen: () => 0,
+    'preis-auf': (a, b) => a.preis - b.preis,
+    'preis-ab': (a, b) => b.preis - a.preis,
+    name: (a, b) => a.name.localeCompare(b.name, sprache)
+  };
+  const alleShopKarten = liste => [...liste].sort((a, b) => (!!a.ausverkauft - !!b.ausverkauft) || SORTEN[sortierung](a, b))
     .map(p => p.varianten ? p.varianten.map((_, i) => shopKarte(p, i)).join('') : shopKarte(p)).join('');
+  const kartenZahl = liste => liste.reduce((n, p) => n + (p.varianten ? p.varianten.length : 1), 0);
   // Produktseite: großes Foto (+ kleine Vorschaubilder), daneben Name, Preis, Auswahl, Menge, Knopf
   function produktAnsicht(p) {
     const idx = p.varianten ? (gewaehlt[p.id] || 0) : 0;
@@ -660,11 +685,17 @@
     const ziel = location.hash.slice(1);
     if (!(ziel in SHOP)) return;
     el('shopTitel').textContent = ziel === 'alle' ? t('alle_produkte') : ziel === 'ohrringe' ? t('art_ohrring') : t('nav_ringe');
-    el('rasterShop').innerHTML = alleShopKarten(PRODUKTE.filter(p => !SHOP[ziel] || p.art === SHOP[ziel]));
+    const liste = PRODUKTE.filter(p => !SHOP[ziel] || p.art === SHOP[ziel]);
+    el('rasterShop').innerHTML = alleShopKarten(liste);
+    const n = kartenZahl(liste);
+    el('shopAnzahl').textContent = n + ' ' + t(n === 1 ? 'produkt_1' : 'produkte');
+    el('sortierung').value = sortierung;
     document.querySelectorAll('.filter a').forEach(a => {
       if (a.getAttribute('href') === '#' + ziel) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
   }
+
+  el('sortierung').addEventListener('change', e => { sortierung = e.target.value; shopZeigen(); });
 
   // ---------- Produktseite ----------
   function produktSeite() {
